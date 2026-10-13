@@ -1,0 +1,4 @@
+./ExportedSQL/
+*.sql
+*.accdb
+*.xlsx
