@@ -2,285 +2,114 @@
 <html lang="vi">
   <head>
     <meta charset="utf-8" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1, viewport-fit=cover"
-    />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title>Kiểm tra lỗi XML.xlsx</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/sql-asm.js"></script>
     <style>
       :root {
-        --bg: #f6f7f9;
-        --card: #fff;
-        --tx: #1b1f24;
-        --mu: #6b7280;
-        --bd: #e3e6ea;
-        --ac: #2563eb;
-        --er: #dc2626;
-        --wn: #d97706;
-        --ok: #16a34a;
+        --bg: #f6f7f9; --card: #fff; --tx: #1b1f24; --mu: #6b7280; --bd: #e3e6ea;
+        --ac: #2563eb; --er: #dc2626; --wn: #d97706; --ok: #16a34a;
         box-sizing: border-box;
         padding-top: env(safe-area-inset-top, 0px);
         padding-bottom: env(safe-area-inset-bottom, 0px);
       }
       @media (prefers-color-scheme: dark) {
         :root:not([data-theme="light"]) {
-          --bg: #111418;
-          --card: #1a1f26;
-          --tx: #e6e8eb;
-          --mu: #98a1ad;
-          --bd: #2c333c;
-          --ac: #60a5fa;
-          --er: #f87171;
-          --wn: #fbbf24;
-          --ok: #4ade80;
+          --bg: #111418; --card: #1a1f26; --tx: #e6e8eb; --mu: #98a1ad; --bd: #2c333c;
+          --ac: #60a5fa; --er: #f87171; --wn: #fbbf24; --ok: #4ade80;
         }
       }
       :root[data-theme="dark"] {
-        --bg: #111418;
-        --card: #1a1f26;
-        --tx: #e6e8eb;
-        --mu: #98a1ad;
-        --bd: #2c333c;
-        --ac: #60a5fa;
-        --er: #f87171;
-        --wn: #fbbf24;
-        --ok: #4ade80;
+        --bg: #111418; --card: #1a1f26; --tx: #e6e8eb; --mu: #98a1ad; --bd: #2c333c;
+        --ac: #60a5fa; --er: #f87171; --wn: #fbbf24; --ok: #4ade80;
       }
-      html {
-        scroll-padding-top: env(safe-area-inset-top, 0px);
-      }
-      * {
-        box-sizing: border-box;
-      }
+      html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+      * { box-sizing: border-box; }
       body {
-        margin: 0;
-        background: var(--bg);
-        color: var(--tx);
-        font:
-          14px/1.5 system-ui,
-          -apple-system,
-          "Segoe UI",
-          Roboto,
-          sans-serif;
+        margin: 0; background: var(--bg); color: var(--tx);
+        font: 14px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
       }
-      .w {
-        max-width: 1100px;
-        margin: 0 auto;
-        padding: 20px 16px 60px;
-      }
-      h1 {
-        font-size: 20px;
-        margin: 0 0 4px;
-      }
-      .sub {
-        color: var(--mu);
-        margin: 0 0 16px;
-      }
+      .w { max-width: 1100px; margin: 0 auto; padding: 20px 16px 60px; }
+      h1 { font-size: 20px; margin: 0 0 4px; }
+      .sub { color: var(--mu); margin: 0 0 16px; }
       .card {
-        background: var(--card);
-        border: 1px solid var(--bd);
-        border-radius: 10px;
-        padding: 14px;
-        margin-bottom: 14px;
+        background: var(--card); border: 1px solid var(--bd); border-radius: 10px;
+        padding: 14px; margin-bottom: 14px;
       }
       #drop {
-        border: 2px dashed var(--bd);
-        text-align: center;
-        padding: 28px 12px;
-        cursor: pointer;
-        border-radius: 10px;
+        border: 2px dashed var(--bd); border-radius: 10px; text-align: center;
+        padding: 28px 12px; cursor: pointer;
       }
-      #drop.on,
-      #drop:hover {
-        border-color: var(--ac);
-      }
+      #drop.on, #drop:hover { border-color: var(--ac); }
       button {
-        font: inherit;
-        background: var(--ac);
-        color: #fff;
-        border: 0;
-        border-radius: 7px;
-        padding: 7px 14px;
-        cursor: pointer;
+        font: inherit; background: var(--ac); color: #fff; border: 0;
+        border-radius: 7px; padding: 7px 14px; cursor: pointer;
       }
-      button.g {
-        background: transparent;
-        color: var(--tx);
-        border: 1px solid var(--bd);
-      }
-      button:disabled {
-        opacity: 0.5;
-        cursor: default;
-      }
+      button.g { background: transparent; color: var(--tx); border: 1px solid var(--bd); }
+      button:disabled { opacity: 0.5; cursor: default; }
       input[type="text"] {
-        font: inherit;
-        padding: 7px 10px;
-        border: 1px solid var(--bd);
-        border-radius: 7px;
-        background: var(--card);
-        color: var(--tx);
-        min-width: 200px;
+        font: inherit; padding: 7px 10px; border: 1px solid var(--bd); border-radius: 7px;
+        background: var(--card); color: var(--tx); min-width: 200px;
       }
       textarea {
-        width: 100%;
-        height: 280px;
-        font:
-          12.5px/1.5 ui-monospace,
-          Consolas,
-          monospace;
-        background: var(--bg);
-        color: var(--tx);
-        border: 1px solid var(--bd);
-        border-radius: 7px;
-        padding: 10px;
-        resize: vertical;
+        width: 100%; height: 280px; padding: 10px; resize: vertical;
+        font: 12.5px/1.5 ui-monospace, Consolas, monospace;
+        background: var(--bg); color: var(--tx); border: 1px solid var(--bd); border-radius: 7px;
       }
-      .row {
-        display: flex;
-        gap: 8px;
-        flex-wrap: wrap;
-        align-items: center;
-      }
-      .stats {
-        display: flex;
-        gap: 10px;
-        flex-wrap: wrap;
-      }
-      .st {
-        flex: 1;
-        min-width: 120px;
-        text-align: center;
-      }
-      .st b {
-        display: block;
-        font-size: 24px;
-      }
+      .row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+      .stats { display: flex; gap: 10px; flex-wrap: wrap; }
+      .st { flex: 1; min-width: 120px; text-align: center; }
+      .st b { display: block; font-size: 24px; }
       .rule {
-        border: 1px solid var(--bd);
-        border-radius: 8px;
-        margin-bottom: 8px;
-        background: var(--card);
-        overflow: hidden;
+        border: 1px solid var(--bd); border-radius: 8px; margin-bottom: 8px;
+        background: var(--card); overflow: hidden;
       }
-      .rh {
-        display: flex;
-        gap: 10px;
-        align-items: center;
-        padding: 10px 12px;
-        cursor: pointer;
-      }
-      .rh:hover {
-        background: var(--bg);
-      }
-      .dot {
-        width: 10px;
-        height: 10px;
-        border-radius: 50%;
-        flex: none;
-      }
-      .cnt {
-        margin-left: auto;
-        font-weight: 600;
-      }
-      .desc {
-        color: var(--mu);
-        font-size: 12.5px;
-        padding: 0 12px 8px;
-      }
-      .rb {
-        display: none;
-        padding: 0 12px 12px;
-      }
-      .rule.open .rb {
-        display: block;
-      }
-      .tw {
-        overflow-x: auto;
-        max-height: 420px;
-        border: 1px solid var(--bd);
-        border-radius: 6px;
-      }
-      table {
-        border-collapse: collapse;
-        width: 100%;
-        font-size: 12.5px;
-      }
-      th,
-      td {
-        padding: 5px 9px;
-        border-bottom: 1px solid var(--bd);
-        text-align: left;
-        white-space: nowrap;
-      }
-      th {
-        position: sticky;
-        top: 0;
-        background: var(--bg);
-      }
-      .m {
-        color: var(--mu);
-        font-size: 12.5px;
-      }
-      .err {
-        color: var(--wn);
-        font-size: 12.5px;
-        white-space: pre-wrap;
-      }
-      details summary {
-        cursor: pointer;
-        color: var(--mu);
-      }
-      .sc {
-        font-size: 12px;
-        color: var(--mu);
-        margin-top: 6px;
-      }
+      .rh { display: flex; gap: 10px; align-items: center; padding: 10px 12px; cursor: pointer; }
+      .rh:hover { background: var(--bg); }
+      .dot { width: 10px; height: 10px; border-radius: 50%; flex: none; }
+      .cnt { margin-left: auto; font-weight: 600; }
+      .desc { color: var(--mu); font-size: 12.5px; padding: 0 12px 8px; }
+      .rb { display: none; padding: 0 12px 12px; }
+      .rule.open .rb { display: block; }
+      .tw { overflow-x: auto; max-height: 420px; border: 1px solid var(--bd); border-radius: 6px; }
+      table { border-collapse: collapse; width: 100%; font-size: 12.5px; }
+      th, td { padding: 5px 9px; border-bottom: 1px solid var(--bd); text-align: left; white-space: nowrap; }
+      th { position: sticky; top: 0; background: var(--bg); }
+      .m { color: var(--mu); font-size: 12.5px; }
+      .err { color: var(--wn); font-size: 12.5px; white-space: pre-wrap; }
+      details summary { cursor: pointer; color: var(--mu); }
+      pre.sql { white-space: pre-wrap; font-size: 12px; user-select: all; }
+      .sc { font-size: 12px; color: var(--mu); margin-top: 6px; }
     </style>
   </head>
   <body>
     <div class="w">
       <h1>🔍 Kiểm tra lỗi file XML.xlsx</h1>
-      <p class="sub">
-        Dữ liệu được xử lý ngay trên trình duyệt, không gửi đi đâu cả. (v6)
-      </p>
+      <p class="sub">Dữ liệu được xử lý ngay trên trình duyệt, không gửi đi đâu cả. (v6)</p>
 
       <div class="card">
         <div id="drop">
-          📂 Kéo thả file .xlsx vào đây hoặc bấm để chọn (có thể thả kèm cả các
-          file .sql)
+          📂 Kéo thả file .xlsx vào đây hoặc bấm để chọn (có thể thả kèm cả các file .sql)
           <div class="m" id="fn"></div>
         </div>
-        <input
-          type="file"
-          id="file"
-          accept=".xlsx,.xlsm,.xls,.csv,.sql,.txt"
-          multiple
-          hidden
-        />
+        <input type="file" id="file" accept=".xlsx,.xlsm,.xls,.csv,.sql,.txt" multiple hidden />
         <div class="sc" id="schema"></div>
       </div>
 
       <div class="card">
         <details id="rd">
-          <summary>
-            <b>Danh sách rule SQL</b> (bấm để sửa / dán 50 view của bạn)
-          </summary>
+          <summary><b>Danh sách rule SQL</b> (bấm để sửa / dán 50 view của bạn)</summary>
           <p class="m">
-            Định dạng: mỗi rule bắt đầu bằng
-            <code>-- @rule Tên | error</code> (hoặc <code>warn</code>). Dòng
-            <code>-- mô tả</code> ngay sau là mô tả. Câu SELECT trả về các dòng
-            lỗi (nên có cột <code>row_num</code>). Phần trước rule đầu tiên là
-            script chạy trước (tạo view trung gian...).
+            Định dạng: mỗi rule bắt đầu bằng <code>-- @rule Tên | error</code> (hoặc
+            <code>warn</code>). Dòng <code>-- mô tả</code> ngay sau là mô tả. Câu SELECT trả về
+            các dòng lỗi (nên có cột <code>row_num</code>). Phần trước rule đầu tiên là script
+            chạy trước (tạo view trung gian...).
           </p>
           <textarea id="rules" spellcheck="false"></textarea>
           <div class="row" style="margin-top: 8px">
             <button id="ldr">📥 Import many .sql files</button>
-            <label class="m"
-              ><input type="checkbox" id="conv" checked /> Auto-convert Access
-              syntax → SQLite</label
-            >
+            <label class="m"><input type="checkbox" id="conv" checked /> Auto-convert Access syntax → SQLite</label>
             <button class="g" id="svr">Tải rule xuống</button>
             <button class="g" id="rst">Khôi phục mẫu</button>
             <input type="file" id="rf" accept=".sql,.txt" multiple hidden />
@@ -291,15 +120,8 @@
       <div class="card row">
         <button id="run" disabled>▶ Chạy kiểm tra</button>
         <button class="g" id="exp" disabled>⬇ Xuất Excel</button>
-        <input
-          type="text"
-          id="q"
-          placeholder="Lọc theo tên rule / nội dung lỗi..."
-        />
-        <label class="m"
-          ><input type="checkbox" id="onlyerr" checked /> Chỉ hiện rule có
-          lỗi</label
-        >
+        <input type="text" id="q" placeholder="Lọc theo tên rule / nội dung lỗi..." />
+        <label class="m"><input type="checkbox" id="onlyerr" checked /> Chỉ hiện rule có lỗi</label>
         <span class="m" id="status">Đang tải thư viện...</span>
       </div>
 
@@ -310,136 +132,96 @@
 
     <script>
       const SAMPLE = ``;
+      const RULE_HEAD = /^--\s*@rule\s+/gm;
       const $ = (id) => document.getElementById(id);
-      let SQL = null,
-        db = null,
-        results = [],
-        fileName = "";
+      const setStatus = (s) => ($("status").textContent = s);
+      let SQL = null, db = null, results = [], fileName = "", createdViews = [];
 
+      // ---------- Helpers ----------
       function lsGet(k) {
-        try {
-          return localStorage.getItem(k);
-        } catch (e) {
-          return null;
-        }
+        try { return localStorage.getItem(k); } catch (e) { return null; }
       }
       function lsSet(k, v) {
-        try {
-          localStorage.setItem(k, v);
-        } catch (e) {}
+        try { localStorage.setItem(k, v); } catch (e) {}
       }
+      function saveRules(v) {
+        $("rules").value = v;
+        lsSet("rules_v1", v);
+      }
+      function esc(s) {
+        return String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
+      }
+      const qi = (s) => '"' + String(s).replace(/"/g, '""') + '"';
+      const p2 = (n) => String(n).padStart(2, "0");
+      // true if SQL has something besides line comments
+      const hasSql = (s) => !!s.replace(/^\s*--.*$/gm, "").trim();
+      const countRules = (s) => (s.match(RULE_HEAD) || []).length;
+
+      function fmt(v) {
+        if (!(v instanceof Date)) return v;
+        const date = `${v.getUTCFullYear()}-${p2(v.getUTCMonth() + 1)}-${p2(v.getUTCDate())}`;
+        return v.getUTCHours() || v.getUTCMinutes() || v.getUTCSeconds()
+          ? `${date} ${p2(v.getUTCHours())}:${p2(v.getUTCMinutes())}:${p2(v.getUTCSeconds())}`
+          : date;
+      }
+
       $("rules").value = lsGet("rules_v1") || SAMPLE;
-      $("rules").addEventListener("input", () =>
-        lsSet("rules_v1", $("rules").value),
-      );
+      $("rules").addEventListener("input", () => lsSet("rules_v1", $("rules").value));
 
       initSqlJs()
         .then((s) => {
           SQL = s;
-          $("status").textContent = "Sẵn sàng. Hãy chọn file.";
+          setStatus("Sẵn sàng. Hãy chọn file.");
         })
-        .catch((e) => ($("status").textContent = "Lỗi tải SQLite: " + e));
+        .catch((e) => setStatus("Lỗi tải SQLite: " + e));
 
       // ---------- Upload ----------
-      const drop = $("drop"),
-        fi = $("file");
+      const drop = $("drop"), fi = $("file");
       drop.onclick = () => fi.click();
       fi.onchange = () => {
         route(fi.files);
         fi.value = "";
       };
-      ["dragover", "dragenter"].forEach((e) =>
-        drop.addEventListener(e, (ev) => {
-          ev.preventDefault();
-          drop.classList.add("on");
-        }),
-      );
-      ["dragleave", "drop"].forEach((e) =>
-        drop.addEventListener(e, (ev) => {
-          ev.preventDefault();
-          drop.classList.remove("on");
-        }),
-      );
-      drop.addEventListener("drop", (ev) => route(ev.dataTransfer.files));
+      const dragState = (on) => (ev) => {
+        ev.preventDefault();
+        drop.classList.toggle("on", on);
+      };
+      drop.addEventListener("dragover", dragState(true));
+      drop.addEventListener("dragenter", dragState(true));
+      drop.addEventListener("dragleave", dragState(false));
+      drop.addEventListener("drop", (ev) => {
+        dragState(false)(ev);
+        route(ev.dataTransfer.files);
+      });
 
-      const qi = (s) => '"' + String(s).replace(/"/g, '""') + '"';
-      function fmt(v) {
-        if (v instanceof Date) {
-          const p = (n) => String(n).padStart(2, "0");
-          let s =
-            v.getUTCFullYear() +
-            "-" +
-            p(v.getUTCMonth() + 1) +
-            "-" +
-            p(v.getUTCDate());
-          if (v.getUTCHours() || v.getUTCMinutes() || v.getUTCSeconds())
-            s +=
-              " " +
-              p(v.getUTCHours()) +
-              ":" +
-              p(v.getUTCMinutes()) +
-              ":" +
-              p(v.getUTCSeconds());
-          return s;
-        }
-        return v;
-      }
       async function loadFile(f) {
-        if (!SQL) {
-          alert("Thư viện SQLite chưa sẵn sàng, thử lại sau vài giây.");
-          return;
-        }
-        $("status").textContent = "Đang đọc file...";
+        if (!SQL) return alert("Thư viện SQLite chưa sẵn sàng, thử lại sau vài giây.");
+        setStatus("Đang đọc file...");
         await new Promise((r) => setTimeout(r, 30));
         try {
-          const buf = await f.arrayBuffer();
-          const wb = XLSX.read(buf, { type: "array", cellDates: true });
+          const wb = XLSX.read(await f.arrayBuffer(), { type: "array", cellDates: true });
           if (db) db.close();
           db = new SQL.Database();
           regFns(db);
           const info = [];
           for (const sn of wb.SheetNames) {
-            const aoa = XLSX.utils.sheet_to_json(wb.Sheets[sn], {
-              header: 1,
-              defval: null,
-              raw: true,
-            });
+            const aoa = XLSX.utils.sheet_to_json(wb.Sheets[sn], { header: 1, defval: null, raw: true });
             if (!aoa.length) continue;
+            // column names: blank -> colN, duplicates -> name_2, name_3...
             const seen = {};
             const cols = aoa[0].map((h, i) => {
-              let n =
-                h == null || String(h).trim() === ""
-                  ? "col" + (i + 1)
-                  : String(h).trim();
-              if (seen[n]) {
-                seen[n]++;
-                n = n + "_" + seen[n];
-              } else seen[n] = 1;
-              return n;
+              const n = h == null || String(h).trim() === "" ? "col" + (i + 1) : String(h).trim();
+              seen[n] = (seen[n] || 0) + 1;
+              return seen[n] > 1 ? n + "_" + seen[n] : n;
             });
-            db.run(
-              "CREATE TABLE " +
-                qi(sn) +
-                " (row_num INTEGER," +
-                cols.map((c) => qi(c) + " COLLATE NOCASE").join(",") +
-                ")",
-            );
-            const st = db.prepare(
-              "INSERT INTO " +
-                qi(sn) +
-                " VALUES (" +
-                new Array(cols.length + 1).fill("?").join(",") +
-                ")",
-            );
+            db.run(`CREATE TABLE ${qi(sn)} (row_num INTEGER,${cols.map((c) => qi(c) + " COLLATE NOCASE").join(",")})`);
+            const st = db.prepare(`INSERT INTO ${qi(sn)} VALUES (${Array(cols.length + 1).fill("?").join(",")})`);
             db.run("BEGIN");
             let n = 0;
             for (let r = 1; r < aoa.length; r++) {
               const row = aoa[r];
               if (!row || row.every((c) => c == null || c === "")) continue;
-              const vals = [r + 1];
-              for (let c = 0; c < cols.length; c++)
-                vals.push(fmt(row[c] === undefined ? null : row[c]));
-              st.run(vals);
+              st.run([r + 1, ...cols.map((_, c) => fmt(row[c] ?? null))]);
               n++;
             }
             db.run("COMMIT");
@@ -447,25 +229,14 @@
             info.push({ sn, cols, n });
           }
           fileName = f.name;
-          $("fn").textContent =
-            f.name + " (" + Math.round(f.size / 1024) + " KB)";
+          $("fn").textContent = `${f.name} (${Math.round(f.size / 1024)} KB)`;
           $("schema").innerHTML =
             "<b>Các bảng đã nạp:</b><br>" +
-            info
-              .map(
-                (t) =>
-                  "• <b>" +
-                  esc(t.sn) +
-                  "</b> (" +
-                  t.n +
-                  " dòng): row_num, " +
-                  t.cols.map(esc).join(", "),
-              )
-              .join("<br>");
+            info.map((t) => `• <b>${esc(t.sn)}</b> (${t.n} dòng): row_num, ${t.cols.map(esc).join(", ")}`).join("<br>");
           $("run").disabled = false;
           runAll();
         } catch (e) {
-          $("status").textContent = "Lỗi đọc file: " + e.message;
+          setStatus("Lỗi đọc file: " + e.message);
           console.error(e);
         }
       }
@@ -476,19 +247,11 @@
         const setup = parts.shift();
         const rules = parts.map((p, i) => {
           const lines = p.split("\n");
-          const head = lines
-            .shift()
-            .split("|")
-            .map((s) => s.trim());
-          const desc = [],
-            sql = [];
+          const head = lines.shift().split("|").map((s) => s.trim());
+          const desc = [], sql = [];
           let inDesc = true;
           for (const l of lines) {
-            if (
-              inDesc &&
-              /^--\s?/.test(l) &&
-              !/^--\s*(SELECT|WITH|CREATE)\b/i.test(l)
-            ) {
+            if (inDesc && /^--\s?/.test(l) && !/^--\s*(SELECT|WITH|CREATE)\b/i.test(l)) {
               desc.push(l.replace(/^--\s?/, ""));
             } else {
               inDesc = false;
@@ -505,70 +268,46 @@
         });
         return { setup, rules };
       }
+
       function runAll() {
         if (!db) return;
-        $("status").textContent = "Đang chạy...";
+        setStatus("Đang chạy...");
         setTimeout(() => {
           const t0 = performance.now();
           const { setup, rules } = parseRules($("rules").value);
-          rules.forEach((r) => {
-            r.sql = fixDots(fnRen(r.sql));
-          });
+          rules.forEach((r) => (r.sql = fixDots(fnRen(r.sql))));
           results = [];
           try {
-            // chạy script setup, bỏ qua dòng comment
-            for (const v of ["v_"]) {
-            }
-            if (setup.replace(/^\s*--.*$/gm, "").trim()) db.exec(setup);
+            if (hasSql(setup)) db.exec(setup);
           } catch (e) {
-            results.push({
-              name: "Script khởi tạo",
-              sev: "error",
-              desc: "",
-              err: e.message,
-              cols: [],
-              rows: [],
-            });
+            results.push({ name: "Script khởi tạo", sev: "error", desc: "", err: e.message, cols: [], rows: [] });
           }
-          for (const v of (window._cv || []).slice().reverse()) {
-            try {
-              db.run("DROP VIEW IF EXISTS " + qi(v));
-            } catch (e) {}
+          // drop views from the previous run, then create one per `as=` rule
+          for (const v of createdViews.reverse()) {
+            try { db.run("DROP VIEW IF EXISTS " + qi(v)); } catch (e) {}
           }
-          window._cv = [];
-          const views = new Set(),
-            verr = {};
+          createdViews = [];
+          const views = new Set(), verr = {};
           for (const r of rules) {
-            if (r.as && r.sql.replace(/^\s*--.*$/gm, "").trim()) {
-              try {
-                db.run(
-                  "CREATE VIEW " +
-                    qi(r.as) +
-                    " AS " +
-                    r.sql.replace(/;\s*$/, ""),
-                );
-                views.add(r.as);
-                window._cv.push(r.as);
-              } catch (e) {
-                verr[r.as] = e.message;
-              }
+            if (!r.as || !hasSql(r.sql)) continue;
+            try {
+              db.run(`CREATE VIEW ${qi(r.as)} AS ${r.sql.replace(/;\s*$/, "")}`);
+              views.add(r.as);
+              createdViews.push(r.as);
+            } catch (e) {
+              verr[r.as] = e.message;
             }
           }
           for (const r of rules) {
             const o = { ...r, cols: [], rows: [], err: null };
-            if (!r.sql.replace(/^\s*--.*$/gm, "").trim()) {
-              o.err = "Rule chưa có câu SQL (đang bị comment?)";
-              o.skip = true;
-              results.push(o);
+            if (!hasSql(r.sql)) {
+              results.push({ ...o, err: "Rule chưa có câu SQL (đang bị comment?)", skip: true });
               continue;
             }
             try {
-              if (r.as && verr[r.as] && !views.has(r.as))
-                throw new Error(verr[r.as]);
-              const res = db.exec(
-                r.as && views.has(r.as) ? "SELECT * FROM " + qi(r.as) : r.sql,
-              );
-              const last = res[res.length - 1];
+              const isView = r.as && views.has(r.as);
+              if (r.as && verr[r.as] && !isView) throw new Error(verr[r.as]);
+              const last = db.exec(isView ? "SELECT * FROM " + qi(r.as) : r.sql).at(-1);
               if (last) {
                 o.cols = last.columns;
                 o.rows = last.values;
@@ -578,8 +317,7 @@
             }
             results.push(o);
           }
-          $("status").textContent =
-            "Xong trong " + ((performance.now() - t0) / 1000).toFixed(2) + "s";
+          setStatus("Xong trong " + ((performance.now() - t0) / 1000).toFixed(2) + "s");
           $("exp").disabled = false;
           render();
         }, 20);
@@ -587,114 +325,68 @@
       $("run").onclick = runAll;
 
       // ---------- Render ----------
-      function esc(s) {
-        return String(s == null ? "" : s).replace(
-          /[&<>"]/g,
-          (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c],
-        );
-      }
+      const stat = (n, label, color) =>
+        `<div class="card st"><b${color ? ` style="color:var(--${color})"` : ""}>${n}</b>${label}</div>`;
+      const sqlDetails = (sql) =>
+        `<details><summary>Xem SQL đã chạy</summary><pre class="sql">${esc(sql)}</pre></details>`;
+      const tr = (cells, tag) => "<tr>" + cells.map((v) => `<${tag}>${esc(v)}</${tag}>`).join("") + "</tr>";
+
       function render() {
-        const q = $("q").value.trim().toLowerCase(),
-          only = $("onlyerr").checked;
+        const q = $("q").value.trim().toLowerCase(), only = $("onlyerr").checked;
         const withErr = results.filter((r) => r.rows.length && !r.err);
         const total = withErr.reduce((a, r) => a + r.rows.length, 0);
         const bad = results.filter((r) => r.err).length;
+        const passed = results.filter((r) => !r.err && !r.rows.length).length;
         $("sum").innerHTML =
-          `<div class="card st"><b>${results.length}</b>Rule đã chạy</div>` +
-          `<div class="card st"><b style="color:var(--er)">${total}</b>Tổng dòng lỗi</div>` +
-          `<div class="card st"><b style="color:var(--er)">${withErr.length}</b>Rule vi phạm</div>` +
-          `<div class="card st"><b style="color:var(--ok)">${results.filter((r) => !r.err && !r.rows.length).length}</b>Rule đạt</div>` +
-          (bad
-            ? `<div class="card st"><b style="color:var(--wn)">${bad}</b>Rule lỗi SQL</div>`
-            : "");
+          stat(results.length, "Rule đã chạy") +
+          stat(total, "Tổng dòng lỗi", "er") +
+          stat(withErr.length, "Rule vi phạm", "er") +
+          stat(passed, "Rule đạt", "ok") +
+          (bad ? stat(bad, "Rule lỗi SQL", "wn") : "");
+
+        // failed rules grouped by error message
         const em = {};
-        results.forEach((r) => {
-          if (r.err) (em[r.err] = em[r.err] || []).push(r.name);
-        });
-        $("miss").innerHTML = Object.keys(em).length
-          ? '<div class="card"><b>Rule không chạy được (' +
-            bad +
-            ") — gom theo nguyên nhân</b>" +
-            Object.entries(em)
-              .sort((a, b) => b[1].length - a[1].length)
-              .map(
-                ([m, n]) =>
-                  '<div class="err">• ' +
-                  esc(m) +
-                  " — " +
-                  n.length +
-                  ' rule <span class="m">(' +
-                  esc(n.slice(0, 6).join(", ")) +
-                  (n.length > 6 ? "…" : "") +
-                  ")</span></div>",
-              )
+        results.forEach((r) => r.err && (em[r.err] ||= []).push(r.name));
+        const groups = Object.entries(em).sort((a, b) => b[1].length - a[1].length);
+        $("miss").innerHTML = groups.length
+          ? `<div class="card"><b>Rule không chạy được (${bad}) — gom theo nguyên nhân</b>` +
+            groups
+              .map(([m, n]) =>
+                `<div class="err">• ${esc(m)} — ${n.length} rule <span class="m">(${esc(n.slice(0, 6).join(", "))}${n.length > 6 ? "…" : ""})</span></div>`)
               .join("") +
             "</div>"
           : "";
+
         const out = $("out");
         out.innerHTML = "";
-        results.forEach((r, i) => {
+        for (const r of results) {
           const has = r.rows.length > 0;
-          if (r.skip) return;
-          if (only && !has && !r.err) return;
-          const hay = (
-            r.name +
-            " " +
-            r.desc +
-            " " +
-            r.rows.map((x) => x.join(" ")).join(" ")
-          ).toLowerCase();
-          if (q && !hay.includes(q)) return;
-          let rows = r.rows;
-          if (q)
-            rows = rows.filter((x) =>
-              (r.name + x.join(" ")).toLowerCase().includes(q),
-            );
-          const color = r.err
-            ? "var(--wn)"
-            : has
-              ? r.sev === "warn"
-                ? "var(--wn)"
-                : "var(--er)"
-              : "var(--ok)";
+          if (r.skip || (only && !has && !r.err)) continue;
+          if (q && !(r.name + " " + r.desc + " " + r.rows.map((x) => x.join(" ")).join(" ")).toLowerCase().includes(q)) continue;
+          const rows = q ? r.rows.filter((x) => (r.name + x.join(" ")).toLowerCase().includes(q)) : r.rows;
+          const color = `var(--${r.err ? "wn" : !has ? "ok" : r.sev === "warn" ? "wn" : "er"})`;
+          let body = "";
+          if (r.err) body = `<div class="err">⚠ Lỗi SQL: ${esc(r.err)}</div>` + sqlDetails(r.sql);
+          else if (has)
+            body =
+              `<div class="tw"><table><thead>${tr(r.cols, "th")}</thead><tbody>` +
+              rows.slice(0, 500).map((x) => tr(x, "td")).join("") +
+              `</tbody></table></div>` +
+              (rows.length > 500 ? `<div class="m">Hiển thị 500/${rows.length} dòng. Xuất Excel để xem đủ.</div>` : "") +
+              sqlDetails(r.sql);
           const d = document.createElement("div");
           d.className = "rule" + (has && results.length <= 12 ? " open" : "");
-          let body = "";
-          if (r.err)
-            body = `<div class="err">⚠ Lỗi SQL: ${esc(r.err)}</div><details><summary>Xem SQL đã chạy</summary><pre style="white-space:pre-wrap;font-size:12px;user-select:all">${esc(r.sql)}</pre></details>`;
-          else if (has) {
-            const show = rows.slice(0, 500);
-            body =
-              `<div class="tw"><table><thead><tr>${r.cols.map((c) => "<th>" + esc(c) + "</th>").join("")}</tr></thead><tbody>` +
-              show
-                .map(
-                  (x) =>
-                    "<tr>" +
-                    x.map((v) => "<td>" + esc(v) + "</td>").join("") +
-                    "</tr>",
-                )
-                .join("") +
-              `</tbody></table></div>` +
-              (rows.length > 500
-                ? `<div class="m">Hiển thị 500/${rows.length} dòng. Xuất Excel để xem đủ.</div>`
-                : "") +
-              `<details><summary>Xem SQL đã chạy</summary><pre style="white-space:pre-wrap;font-size:12px;user-select:all">${esc(r.sql)}</pre></details>`;
-          }
           d.innerHTML =
             `<div class="rh"><span class="dot" style="background:${color}"></span><b>${esc(r.name)}</b>` +
-            `<span class="m">${r.sev === "warn" ? "cảnh báo" : "lỗi"}</span><span class="cnt" style="color:${color}">${r.err ? "lỗi SQL" : has ? rows.length + " dòng" : "✓"}</span></div>` +
+            `<span class="m">${r.sev === "warn" ? "cảnh báo" : "lỗi"}</span>` +
+            `<span class="cnt" style="color:${color}">${r.err ? "lỗi SQL" : has ? rows.length + " dòng" : "✓"}</span></div>` +
             (r.desc ? `<div class="desc">${esc(r.desc)}</div>` : "") +
             `<div class="rb">${body}</div>`;
           d.querySelector(".rh").onclick = () => d.classList.toggle("open");
           out.appendChild(d);
-        });
+        }
         if (!out.children.length)
-          out.innerHTML =
-            '<div class="card m">' +
-            (results.length
-              ? "🎉 Không có lỗi nào (hoặc không khớp bộ lọc)."
-              : "Chưa có kết quả.") +
-            "</div>";
+          out.innerHTML = `<div class="card m">${results.length ? "🎉 Không có lỗi nào (hoặc không khớp bộ lọc)." : "Chưa có kết quả."}</div>`;
       }
       $("q").oninput = render;
       $("onlyerr").onchange = render;
@@ -703,92 +395,55 @@
       $("exp").onclick = () => {
         const wb = XLSX.utils.book_new();
         const sum = [["Rule", "Mức độ", "Số dòng lỗi", "Ghi chú"]];
-        results.forEach((r) => {
-          if (!r.skip)
-            sum.push([
-              r.name,
-              r.sev === "warn" ? "Cảnh báo" : "Lỗi",
-              r.rows.length,
-              r.err || r.desc,
-            ]);
-        });
-        XLSX.utils.book_append_sheet(
-          wb,
-          XLSX.utils.aoa_to_sheet(sum),
-          "Tong hop",
-        );
+        for (const r of results)
+          if (!r.skip) sum.push([r.name, r.sev === "warn" ? "Cảnh báo" : "Lỗi", r.rows.length, r.err || r.desc]);
+        XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(sum), "Tong hop");
         const used = { "Tong hop": 1 };
         results.forEach((r, i) => {
           if (!r.rows.length) return;
-          let n =
-            r.name.replace(/[\\\/\?\*\[\]:]/g, " ").slice(0, 28) || "Rule" + i;
+          let n = r.name.replace(/[\\\/\?\*\[\]:]/g, " ").slice(0, 28) || "Rule" + i;
           while (used[n]) n = n.slice(0, 26) + "_" + i;
           used[n] = 1;
-          XLSX.utils.book_append_sheet(
-            wb,
-            XLSX.utils.aoa_to_sheet([r.cols, ...r.rows]),
-            n,
-          );
+          XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet([r.cols, ...r.rows]), n);
         });
-        XLSX.writeFile(
-          wb,
-          "loi_" + (fileName.replace(/\.[^.]+$/, "") || "ketqua") + ".xlsx",
-        );
+        XLSX.writeFile(wb, "loi_" + (fileName.replace(/\.[^.]+$/, "") || "ketqua") + ".xlsx");
       };
 
-      // ---------- Rule file ----------
-      $("ldr").onclick = () => $("rf").click();
+      // ---------- Access → SQLite conversion ----------
       async function readTxt(f) {
         const b = new Uint8Array(await f.arrayBuffer());
-        if (b[0] === 0xff && b[1] === 0xfe)
-          return new TextDecoder("utf-16le").decode(b);
+        if (b[0] === 0xff && b[1] === 0xfe) return new TextDecoder("utf-16le").decode(b);
         try {
-          return new TextDecoder("utf-8", { fatal: true })
-            .decode(b)
-            .replace(/^\uFEFF/, "");
+          return new TextDecoder("utf-8", { fatal: true }).decode(b).replace(/^﻿/, "");
         } catch (e) {
           return new TextDecoder("windows-1258").decode(b);
         }
       }
+
+      const FN_RENAMES = [
+        ["Nz", "coalesce"], ["Mid", "substr"], ["Len", "length"], ["UCase", "upper"],
+        ["LCase", "lower"], ["InStr", "instr"], ["Left", "xLeft"], ["Right", "xRight"],
+      ];
+      const FN_RENAMES_ALL = [...FN_RENAMES, ["Format", "xFormat"], ["Int", "xInt"]];
+      const renameFns = (s, list) =>
+        list.reduce((acc, [from, to]) => acc.replace(new RegExp(`\\b${from}\\s*\\(`, "gi"), to + "("), s);
+
       function a2s(sql) {
-        let s = sql
-          .replace(/\/\*[\s\S]*?\*\//g, "")
-          .trim()
-          .replace(/;\s*$/, "");
-        s = s.replace(
-          /"([^"]*)"/g,
-          (m, x) => "'" + x.replace(/'/g, "''") + "'",
-        );
-        s = s.replace(
-          /\bLIKE\s+'([^']*)'/gi,
-          (m, p) =>
-            "LIKE '" +
-            p.replace(/\*/g, "%").replace(/\?/g, "_").replace(/#/g, "_") +
-            "'",
-        );
-        s = s.replace(/\[\s*(SELECT[\s\S]*?);?\s*\]\.\s*AS\s+/gi, "($1) AS ");
-        s = s.replace(/\[([^\]]+)\]/g, '"$1"');
-        s = s.replace(/\s*&\s*/g, " || ");
-        s = s.replace(/#(\d{1,4}[\/-]\d{1,2}[\/-]\d{1,4})#/g, "CDate('$1')");
+        let s = sql.replace(/\/\*[\s\S]*?\*\//g, "").trim().replace(/;\s*$/, "");
         s = s
+          .replace(/"([^"]*)"/g, (m, x) => "'" + x.replace(/'/g, "''") + "'")
+          .replace(/\bLIKE\s+'([^']*)'/gi, (m, p) => "LIKE '" + p.replace(/\*/g, "%").replace(/[?#]/g, "_") + "'")
+          .replace(/\[\s*(SELECT[\s\S]*?);?\s*\]\.\s*AS\s+/gi, "($1) AS ")
+          .replace(/\[([^\]]+)\]/g, '"$1"')
+          .replace(/\s*&\s*/g, " || ")
+          .replace(/#(\d{1,4}[\/-]\d{1,2}[\/-]\d{1,4})#/g, "CDate('$1')")
           .replace(/\bDISTINCTROW\b/gi, "DISTINCT")
           .replace(/\bDate\(\)/gi, "CDate(date('now'))")
           .replace(/\bNow\(\)/gi, "CDate(datetime('now'))");
-        s = s
-          .replace(/\bNz\s*\(/gi, "coalesce(")
-          .replace(/\bMid\s*\(/gi, "substr(")
-          .replace(/\bLen\s*\(/gi, "length(")
-          .replace(/\bUCase\s*\(/gi, "upper(")
-          .replace(/\bLCase\s*\(/gi, "lower(")
-          .replace(/\bInStr\s*\(/gi, "instr(")
-          .replace(/\bLeft\s*\(/gi, "xLeft(")
-          .replace(/\bRight\s*\(/gi, "xRight(");
-        s = s.replace(
-          /^(\s*SELECT\s+(?:DISTINCT\s+)?)TOP\s+(\d+)\s+([\s\S]*)$/i,
-          "$1$3 LIMIT $2",
-        );
-        return s;
+        return renameFns(s, FN_RENAMES).replace(/^(\s*SELECT\s+(?:DISTINCT\s+)?)TOP\s+(\d+)\s+([\s\S]*)$/i, "$1$3 LIMIT $2");
       }
+
+      // a.b.c -> a.c and "a.b".c -> a.c, outside string literals
       function fixDots(s) {
         return s
           .split(/('(?:[^']|'')*')/)
@@ -796,129 +451,64 @@
             i % 2
               ? p
               : p
-                  .replace(
-                    /(?<![\w".])([A-Za-z_]\w*)\.([A-Za-z_]\w*)\.([A-Za-z_]\w*)(?![\w(])/g,
-                    "$1.$3",
-                  )
-                  .replace(
-                    /"([A-Za-z_]\w*)\.([A-Za-z_]\w*)"\.([A-Za-z_]\w*)/g,
-                    "$1.$3",
-                  ),
+                  .replace(/(?<![\w".])([A-Za-z_]\w*)\.([A-Za-z_]\w*)\.([A-Za-z_]\w*)(?![\w(])/g, "$1.$3")
+                  .replace(/"([A-Za-z_]\w*)\.([A-Za-z_]\w*)"\.([A-Za-z_]\w*)/g, "$1.$3"),
           )
           .join("");
       }
+
       function fnRen(s) {
         s = s
-          .replace(
-            /\b(Left|Right|Mid|Trim|UCase|LCase|Format|Chr|Str|Space)\$\s*\(/gi,
-            "$1(",
-          )
+          .replace(/\b(Left|Right|Mid|Trim|UCase|LCase|Format|Chr|Str|Space)\$\s*\(/gi, "$1(")
           .replace(/\s+Mod\s+/gi, " % ")
           .replace(/\bIsNull\s*\(/gi, "xIsNull(");
-        return s
-          .replace(/\bNz\s*\(/gi, "coalesce(")
-          .replace(/\bMid\s*\(/gi, "substr(")
-          .replace(/\bLen\s*\(/gi, "length(")
-          .replace(/\bUCase\s*\(/gi, "upper(")
-          .replace(/\bLCase\s*\(/gi, "lower(")
-          .replace(/\bInStr\s*\(/gi, "instr(")
-          .replace(/\bLeft\s*\(/gi, "xLeft(")
-          .replace(/\bRight\s*\(/gi, "xRight(")
-          .replace(/\bFormat\s*\(/gi, "xFormat(")
-          .replace(/\bInt\s*\(/gi, "xInt(");
+        return renameFns(s, FN_RENAMES_ALL);
       }
+
+      // ---------- Access functions for SQLite ----------
       function regFns(d) {
         const f = (n, fn) => {
           try {
-            Object.defineProperty(fn, "length", { value: -1 });
+            Object.defineProperty(fn, "length", { value: -1 }); // variadic
             d.create_function(n, fn);
           } catch (e) {
             console.error("fn " + n, e);
           }
         };
+        const nn = (fn) => (v) => (v == null ? null : fn(v)); // null-passthrough
+        const isNull = (v) => (v == null ? 1 : 0);
+
         f("xLeft", (s, n) => (s == null ? null : String(s).slice(0, n)));
-        f("xRight", (s, n) =>
-          s == null ? null : n > 0 ? String(s).slice(-n) : "",
-        );
-        f("CStr", (s) => (s == null ? null : String(s)));
-        f("CInt", (s) => (s == null ? null : Math.round(parseFloat(s))));
-        f("CLng", (s) => (s == null ? null : Math.round(parseFloat(s))));
-        f("CDbl", (s) => (s == null ? null : parseFloat(s)));
+        f("xRight", (s, n) => (s == null ? null : n > 0 ? String(s).slice(-n) : ""));
+        f("CStr", nn(String));
+        for (const n of ["CInt", "CLng"]) f(n, nn((s) => Math.round(parseFloat(s))));
+        for (const n of ["CDbl", "CCur", "CSng"]) f(n, nn((s) => parseFloat(s)));
         f("Val", (s) => {
-          const m = String(s == null ? "" : s)
-            .trim()
-            .match(/^[-+]?\d*\.?\d+/);
+          const m = String(s ?? "").trim().match(/^[-+]?\d*\.?\d+/);
           return m ? parseFloat(m[0]) : 0;
         });
-        f("IsNumeric", (s) =>
-          s != null && String(s).trim() !== "" && !isNaN(Number(s)) ? 1 : 0,
-        );
-        const dp = (s, i) => {
-          const m = String(s == null ? "" : s).match(
-            /^(\d{4})-(\d{2})-(\d{2})/,
-          );
-          return m ? parseInt(m[i], 10) : null;
-        };
-        const p2 = (n) => String(n).padStart(2, "0");
+        f("IsNumeric", (s) => (s != null && String(s).trim() !== "" && !isNaN(Number(s)) ? 1 : 0));
+
+        // parse a date-ish value to UTC ms (yyyymmdd[hhmm[ss]], yyyy-mm-dd[ hh:mm[:ss]], dd/mm/yyyy[ hh:mm[:ss]], Excel serial)
         const pd = (v) => {
           if (v == null || v === "") return null;
           const s = String(v).trim();
           const m =
             s.match(/^(\d{4})(\d{2})(\d{2})(?:(\d{2})(\d{2})(\d{2})?)?$/) ||
-            s.match(
-              /^(\d{4})-(\d{1,2})-(\d{1,2})(?:[ T](\d{1,2}):(\d{2})(?::(\d{2}))?)?/,
-            );
+            s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})(?:[ T](\d{1,2}):(\d{2})(?::(\d{2}))?)?/);
           if (m && +m[2] >= 1 && +m[2] <= 12 && +m[3] >= 1 && +m[3] <= 31)
-            return Date.UTC(
-              +m[1],
-              m[2] - 1,
-              +m[3],
-              +(m[4] || 0),
-              +(m[5] || 0),
-              +(m[6] || 0),
-            );
-          const k = s.match(
-            /^(\d{1,2})\/(\d{1,2})\/(\d{4})(?:\s+(\d{1,2}):(\d{2})(?::(\d{2}))?)?$/,
-          );
-          if (k)
-            return Date.UTC(
-              +k[3],
-              k[2] - 1,
-              +k[1],
-              +(k[4] || 0),
-              +(k[5] || 0),
-              +(k[6] || 0),
-            );
-          if (/^\d+(\.\d+)?$/.test(s) && +s < 200000)
-            return Math.round((+s - 25569) * 864e5);
+            return Date.UTC(+m[1], m[2] - 1, +m[3], +(m[4] || 0), +(m[5] || 0), +(m[6] || 0));
+          const k = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})(?:\s+(\d{1,2}):(\d{2})(?::(\d{2}))?)?$/);
+          if (k) return Date.UTC(+k[3], k[2] - 1, +k[1], +(k[4] || 0), +(k[5] || 0), +(k[6] || 0));
+          if (/^\d+(\.\d+)?$/.test(s) && +s < 200000) return Math.round((+s - 25569) * 864e5);
           return null;
-        };
-        const fd = (t) => {
-          const d = new Date(t);
-          return (
-            d.getUTCFullYear() +
-            "-" +
-            p2(d.getUTCMonth() + 1) +
-            "-" +
-            p2(d.getUTCDate())
-          );
-        };
-        const fdt = (t) => {
-          const d = new Date(t);
-          return (
-            fd(t) +
-            " " +
-            p2(d.getUTCHours()) +
-            ":" +
-            p2(d.getUTCMinutes()) +
-            ":" +
-            p2(d.getUTCSeconds())
-          );
         };
         const g = (v, fn) => {
           const t = pd(v);
           return t == null ? null : fn(new Date(t), t);
         };
+        const ser = (t) => t / 864e5 + 25569; // UTC ms -> Excel/Access serial
+
         f("Year", (v) => g(v, (d) => d.getUTCFullYear()));
         f("Month", (v) => g(v, (d) => d.getUTCMonth() + 1));
         f("Day", (v) => g(v, (d) => d.getUTCDate()));
@@ -926,156 +516,73 @@
         f("Minute", (v) => g(v, (d) => d.getUTCMinutes()));
         f("Second", (v) => g(v, (d) => d.getUTCSeconds()));
         f("Weekday", (v) => g(v, (d) => d.getUTCDay() + 1));
-        f("DateValue", (v) => g(v, (d, t) => fd(t)));
-        f("CDate", (v) => g(v, (d, t) => (t % 864e5 ? fdt(t) : fd(t))));
         f("IsDate", (v) => (pd(v) == null ? 0 : 1));
-        f("DateSerial", (y, m, d) => fd(Date.UTC(y, m - 1, d)));
+        f("DateValue", (v) => g(v, (d, t) => Math.floor(ser(t))));
+        f("CDate", (v) => g(v, (d, t) => ser(t)));
+        f("DateSerial", (y, m, d) => ser(Date.UTC(y, m - 1, d)));
+        f("TimeSerial", (h, m, s) => ((+h || 0) * 3600 + (+m || 0) * 60 + (+s || 0)) / 86400);
+        f("TimeValue", (v) => g(v, (d, t) => ser(t) - Math.floor(ser(t))));
         f("DateDiff", (i, a, b) => {
-          const x = pd(a),
-            y = pd(b);
+          const x = pd(a), y = pd(b);
           if (x == null || y == null) return null;
-          const A = new Date(x),
-            B = new Date(y);
+          const A = new Date(x), B = new Date(y);
+          const per = (ms) => Math.floor(y / ms) - Math.floor(x / ms);
           switch (String(i).toLowerCase()) {
-            case "yyyy":
-              return B.getUTCFullYear() - A.getUTCFullYear();
+            case "yyyy": return B.getUTCFullYear() - A.getUTCFullYear();
             case "q": {
-              const q = (D) =>
-                D.getUTCFullYear() * 4 + Math.floor(D.getUTCMonth() / 3);
+              const q = (D) => D.getUTCFullYear() * 4 + Math.floor(D.getUTCMonth() / 3);
               return q(B) - q(A);
             }
-            case "m":
-              return (
-                B.getUTCFullYear() * 12 +
-                B.getUTCMonth() -
-                (A.getUTCFullYear() * 12 + A.getUTCMonth())
-              );
-            case "ww":
-              return (
-                Math.floor((Math.floor(y / 864e5) + 4) / 7) -
-                Math.floor((Math.floor(x / 864e5) + 4) / 7)
-              );
-            case "h":
-              return Math.floor(y / 36e5) - Math.floor(x / 36e5);
-            case "n":
-              return Math.floor(y / 6e4) - Math.floor(x / 6e4);
-            case "s":
-              return Math.floor(y / 1e3) - Math.floor(x / 1e3);
-            default:
-              return Math.floor(y / 864e5) - Math.floor(x / 864e5);
+            case "m": return B.getUTCFullYear() * 12 + B.getUTCMonth() - (A.getUTCFullYear() * 12 + A.getUTCMonth());
+            case "ww": return Math.floor((Math.floor(y / 864e5) + 4) / 7) - Math.floor((Math.floor(x / 864e5) + 4) / 7);
+            case "h": return per(36e5);
+            case "n": return per(6e4);
+            case "s": return per(1e3);
+            default: return per(864e5);
           }
         });
         f("DateAdd", (i, n, v) => {
           const t = pd(v);
           if (t == null || n == null) return null;
           i = String(i).toLowerCase();
-          let r;
-          const mm = { m: 1, q: 3, yyyy: 12 }[i];
-          if (mm) {
+          const months = { m: 1, q: 3, yyyy: 12 }[i];
+          if (months) {
             const d = new Date(t);
-            d.setUTCMonth(d.getUTCMonth() + n * mm);
-            r = d.getTime();
-          } else
-            r =
-              t +
-              n *
-                ({
-                  d: 864e5,
-                  y: 864e5,
-                  w: 864e5,
-                  ww: 6048e5,
-                  h: 36e5,
-                  n: 6e4,
-                  s: 1e3,
-                }[i] || 864e5);
-          return t % 864e5 || ["h", "n", "s"].includes(i) ? fdt(r) : fd(r);
+            d.setUTCMonth(d.getUTCMonth() + n * months);
+            return ser(d.getTime());
+          }
+          return ser(t + n * ({ ww: 6048e5, h: 36e5, n: 6e4, s: 1e3 }[i] || 864e5));
         });
         f("DatePart", (i, v) =>
           g(v, (d, t) => {
             switch (String(i).toLowerCase()) {
-              case "yyyy":
-                return d.getUTCFullYear();
-              case "q":
-                return Math.floor(d.getUTCMonth() / 3) + 1;
-              case "m":
-                return d.getUTCMonth() + 1;
-              case "d":
-                return d.getUTCDate();
-              case "h":
-                return d.getUTCHours();
-              case "n":
-                return d.getUTCMinutes();
-              case "s":
-                return d.getUTCSeconds();
-              case "w":
-                return d.getUTCDay() + 1;
-              case "y":
-                return (
-                  Math.floor((t - Date.UTC(d.getUTCFullYear(), 0, 1)) / 864e5) +
-                  1
-                );
-              default:
-                return null;
+              case "yyyy": return d.getUTCFullYear();
+              case "q": return Math.floor(d.getUTCMonth() / 3) + 1;
+              case "m": return d.getUTCMonth() + 1;
+              case "d": return d.getUTCDate();
+              case "h": return d.getUTCHours();
+              case "n": return d.getUTCMinutes();
+              case "s": return d.getUTCSeconds();
+              case "w": return d.getUTCDay() + 1;
+              case "y": return Math.floor((t - Date.UTC(d.getUTCFullYear(), 0, 1)) / 864e5) + 1;
+              default: return null;
             }
           }),
         );
-        const ser = (t) => t / 864e5 + 25569;
-        f("DateValue", (v) => g(v, (d, t) => Math.floor(ser(t))));
-        f("CDate", (v) => g(v, (d, t) => ser(t)));
-        f("DateSerial", (y, m, d) => ser(Date.UTC(y, m - 1, d)));
-        f(
-          "TimeSerial",
-          (h, m, s) => ((+h || 0) * 3600 + (+m || 0) * 60 + (+s || 0)) / 86400,
-        );
-        f("TimeValue", (v) =>
-          g(v, (d, t) => {
-            const x = ser(t);
-            return x - Math.floor(x);
-          }),
-        );
-        f("DateAdd", (i, n, v) => {
-          const t = pd(v);
-          if (t == null || n == null) return null;
-          i = String(i).toLowerCase();
-          let r;
-          const mm = { m: 1, q: 3, yyyy: 12 }[i];
-          if (mm) {
-            const d = new Date(t);
-            d.setUTCMonth(d.getUTCMonth() + n * mm);
-            r = d.getTime();
-          } else
-            r =
-              t +
-              n *
-                ({
-                  d: 864e5,
-                  y: 864e5,
-                  w: 864e5,
-                  ww: 6048e5,
-                  h: 36e5,
-                  n: 6e4,
-                  s: 1e3,
-                }[i] || 864e5);
-          return ser(r);
-        });
-        f("xIsNull", (v) => (v == null ? 1 : 0));
+
+        f("xIsNull", isNull);
+        f("IsNull", isNull);
         f("Switch", (...a) => {
           for (let i = 0; i + 1 < a.length; i += 2) if (a[i]) return a[i + 1];
           return null;
         });
-        f("Fix", (v) => (v == null ? null : Math.trunc(Number(v))));
-        f("Sgn", (v) => (v == null ? null : Math.sign(Number(v))));
-        f("CCur", (v) => (v == null ? null : parseFloat(v)));
-        f("CSng", (v) => (v == null ? null : parseFloat(v)));
-        f("Chr", (n) => (n == null ? null : String.fromCharCode(n)));
-        f("ChrW", (n) => (n == null ? null : String.fromCharCode(n)));
+        f("Fix", nn((v) => Math.trunc(Number(v))));
+        f("Sgn", nn((v) => Math.sign(Number(v))));
+        f("xInt", nn((v) => Math.floor(Number(v))));
+        for (const n of ["Chr", "ChrW"]) f(n, nn((c) => String.fromCharCode(c)));
         f("Asc", (s) => (s ? String(s).charCodeAt(0) : null));
-        f("IsNull", (v) => (v == null ? 1 : 0));
-        f("xInt", (v) => (v == null ? null : Math.floor(Number(v))));
         f("Space", (n) => " ".repeat(Math.max(0, n | 0)));
-        f("StrReverse", (s) =>
-          s == null ? null : [...String(s)].reverse().join(""),
-        );
+        f("StrReverse", nn((s) => [...String(s)].reverse().join("")));
         f("xFormat", (v, fm) => {
           if (v == null) return null;
           fm = String(fm || "");
@@ -1083,178 +590,108 @@
             const t = pd(v);
             if (t == null) return String(v);
             const d = new Date(t);
-            return fm.replace(/(hh[:.]?)mm/gi, "$1nn").replace(
-              /yyyy|yy|mm|dd|hh|nn|ss/gi,
-              (k) =>
-                ({
-                  yyyy: d.getUTCFullYear(),
-                  yy: String(d.getUTCFullYear()).slice(2),
-                  mm: p2(d.getUTCMonth() + 1),
-                  dd: p2(d.getUTCDate()),
-                  hh: p2(d.getUTCHours()),
-                  nn: p2(d.getUTCMinutes()),
-                  ss: p2(d.getUTCSeconds()),
-                })[k.toLowerCase()],
-            );
+            const parts = {
+              yyyy: d.getUTCFullYear(), yy: String(d.getUTCFullYear()).slice(2),
+              mm: p2(d.getUTCMonth() + 1), dd: p2(d.getUTCDate()),
+              hh: p2(d.getUTCHours()), nn: p2(d.getUTCMinutes()), ss: p2(d.getUTCSeconds()),
+            };
+            // "hh:mm" means minutes, not month
+            return fm.replace(/(hh[:.]?)mm/gi, "$1nn").replace(/yyyy|yy|mm|dd|hh|nn|ss/gi, (k) => parts[k.toLowerCase()]);
           }
           const n = Number(v);
           if (isNaN(n)) return String(v);
-          const parts = fm.split("."),
-            dec = (parts[1] || "").length,
-            zeros = (parts[0].match(/0/g) || []).length;
-          let [ip, fr] = Math.abs(n).toFixed(dec).split(".");
+          const [intFmt, decFmt = ""] = fm.split(".");
+          const zeros = (intFmt.match(/0/g) || []).length;
+          let [ip, fr] = Math.abs(n).toFixed(decFmt.length).split(".");
           ip = ip.padStart(zeros, "0");
-          if (parts[0].includes(","))
-            ip = ip.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+          if (intFmt.includes(",")) ip = ip.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
           return (n < 0 ? "-" : "") + ip + (fr ? "." + fr : "");
         });
-        const likeCache = new Map(),
-          esc1 = (c) => c.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"),
-          nz = (s) => String(s).normalize("NFC").toLowerCase();
+
+        // case-insensitive, Unicode-normalized LIKE
+        const likeCache = new Map();
+        const reEsc = (c) => c.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+        const nz = (s) => String(s).normalize("NFC").toLowerCase();
         d.create_function("like", function (p, s) {
           if (p == null || s == null) return null;
           p = nz(p);
           let re = likeCache.get(p);
           if (!re) {
-            re = new RegExp(
-              "^" +
-                [...p]
-                  .map((c) =>
-                    c === "%" ? "[\\s\\S]*" : c === "_" ? "[\\s\\S]" : esc1(c),
-                  )
-                  .join("") +
-                "$",
-            );
+            re = new RegExp("^" + [...p].map((c) => (c === "%" ? "[\\s\\S]*" : c === "_" ? "[\\s\\S]" : reEsc(c))).join("") + "$");
             likeCache.set(p, re);
           }
           return re.test(nz(s)) ? 1 : 0;
         });
       }
 
+      // ---------- Rule files ----------
       async function importSql(files) {
-        if (!files || files.length === 0) return;
+        if (!files?.length) return;
+        const convert = $("conv").checked;
+        const sorted = [...files].sort((a, b) => a.name.localeCompare(b.name));
+        const parts = [], errors = [];
+        let nFiles = 0, nRules = 0;
 
-        const convertAccess = $("conv").checked;
-        const sortedFiles = [...files].sort((a, b) =>
-          a.name.localeCompare(b.name),
-        );
-
-        const importedParts = [];
-        const errors = [];
-
-        let totalFiles = 0;
-        let totalRules = 0;
-
-        for (const file of sortedFiles) {
+        for (const file of sorted) {
           try {
             const raw = await readTxt(file);
-
-            if (!raw || !raw.trim()) {
+            if (!raw.trim()) {
               errors.push(`${file.name}: file is empty`);
               continue;
             }
-
-            // If the file already contains rule headers, preserve the whole file.
-            // Do not convert or split its SQL here.
             if (/^\s*--\s*@rule\s+/m.test(raw)) {
+              // file already has rule headers: keep it as-is
               const content = raw.trim();
-
-              // Count rule headers to help verify that no rules were lost.
-              const ruleCount = (content.match(/^--\s*@rule\s+/gm) || [])
-                .length;
-
-              importedParts.push(content);
-              totalRules += ruleCount;
+              parts.push(content);
+              nRules += countRules(content);
             } else {
-              // A plain SQL file becomes one rule.
+              // plain SQL file becomes one rule
               const name = file.name.replace(/\.[^.]+$/, "");
-
-              let sql = convertAccess ? a2s(raw) : raw.trim();
-
-              // Remove trailing semicolons before adding one consistently.
-              sql = sql.replace(/;\s*$/, "");
-
-              const content =
-                `-- @rule ${name} | error | as=${name}\n` + `${sql};`;
-
-              importedParts.push(content);
-              totalRules++;
+              const sql = (convert ? a2s(raw) : raw.trim()).replace(/;\s*$/, "");
+              parts.push(`-- @rule ${name} | error | as=${name}\n${sql};`);
+              nRules++;
             }
-
-            totalFiles++;
-          } catch (error) {
-            errors.push(`${file.name}: ${error.message}`);
+            nFiles++;
+          } catch (e) {
+            errors.push(`${file.name}: ${e.message}`);
           }
         }
+        if (errors.length) console.error("SQL import errors:", errors);
+        if (!parts.length) return setStatus("No SQL files were imported. Check the selected files.");
 
-        if (importedParts.length === 0) {
-          $("status").textContent =
-            "No SQL files were imported. Check the selected files.";
-          if (errors.length) {
-            console.error("SQL import errors:", errors);
-          }
-          return;
-        }
-
-        // Append imported rules to existing rules instead of overwriting them.
-        const existing = $("rules").value.trim();
-
-        const combined =
-          [existing, ...importedParts].filter(Boolean).join("\n\n") + "\n";
-
-        $("rules").value = combined;
-
-        // Save and show the rules editor.
-        lsSet("rules_v1", combined);
+        // append to existing rules
+        const combined = [$("rules").value.trim(), ...parts].filter(Boolean).join("\n\n") + "\n";
+        saveRules(combined);
         $("rd").open = true;
-
-        // Count all rules currently in the editor.
-        const currentRuleCount = (combined.match(/^--\s*@rule\s+/gm) || [])
-          .length;
-
-        let message =
-          `Imported ${totalFiles}/${sortedFiles.length} file(s). ` +
-          `${totalRules} rule(s) imported. ` +
-          `${currentRuleCount} rule header(s) now in the editor.`;
-
-        if (errors.length > 0) {
-          message += ` ${errors.length} file(s) failed. Check the console.`;
-          console.error("SQL import errors:", errors);
-        }
-
-        $("status").textContent = message;
-
-        // Re-run the rules if a database is already loaded.
-        if (db) {
-          runAll();
-        }
+        setStatus(
+          `Imported ${nFiles}/${sorted.length} file(s). ${nRules} rule(s) imported. ` +
+            `${countRules(combined)} rule header(s) now in the editor.` +
+            (errors.length ? ` ${errors.length} file(s) failed. Check the console.` : ""),
+        );
+        if (db) runAll();
       }
 
+      // .sql/.txt files go to the rule editor, the first other file is loaded as data
       async function route(list) {
-        const a = [...list],
-          isS = (f) => /\.(sql|txt)$/i.test(f.name);
-        const sq = a.filter(isS),
-          x = a.find((f) => !isS(f));
-        if (sq.length) await importSql(sq);
-        if (x) loadFile(x);
+        const all = [...list], isSql = (f) => /\.(sql|txt)$/i.test(f.name);
+        const sqlFiles = all.filter(isSql), dataFile = all.find((f) => !isSql(f));
+        if (sqlFiles.length) await importSql(sqlFiles);
+        if (dataFile) loadFile(dataFile);
       }
+
+      $("ldr").onclick = () => $("rf").click();
       $("rf").onchange = (e) => {
         route(e.target.files);
         e.target.value = "";
       };
       $("svr").onclick = () => {
         const a = document.createElement("a");
-        a.href = URL.createObjectURL(
-          new Blob([$("rules").value], { type: "text/plain" }),
-        );
+        a.href = URL.createObjectURL(new Blob([$("rules").value], { type: "text/plain" }));
         a.download = "rules.sql";
         a.click();
       };
       $("rst").onclick = () => {
-        if (confirm("Khôi phục rule mẫu? Rule hiện tại sẽ bị ghi đè.")) {
-          $("rules").value = SAMPLE;
-          lsSet("rules_v1", SAMPLE);
-        }
+        if (confirm("Khôi phục rule mẫu? Rule hiện tại sẽ bị ghi đè.")) saveRules(SAMPLE);
       };
     </script>
   </body>
