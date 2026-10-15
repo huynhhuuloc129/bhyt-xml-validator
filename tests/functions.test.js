@@ -1,0 +1,70 @@
+// Run from the project folder with: node --test
+// Checks the Access → SQLite conversion and the Access functions registered on SQLite.
+const { test } = require("node:test");
+const assert = require("node:assert");
+const fs = require("fs");
+const path = require("path");
+
+// Load the browser scripts (plain globals) into one function scope
+const load = (...files) =>
+  new Function(
+    files.map((f) => fs.readFileSync(path.join(__dirname, "..", f), "utf8")).join("\n") +
+      "\nreturn { a2s, fnRen, fixDots, regFns, fmt };",
+  )();
+const { a2s, fnRen, fixDots, regFns, fmt } = load("js/utils.js", "js/access-convert.js", "js/access-functions.js");
+const fn = {};
+regFns({ create_function: (name, f) => (fn[name] = f) });
+
+test("a2s converts Access syntax", () => {
+  assert.strictEqual(
+    a2s('SELECT TOP 5 [a] & "x" FROM [T] WHERE b LIKE "a*?" AND d > #2024-01-02#;'),
+    `SELECT "a" || 'x' FROM "T" WHERE b LIKE 'a%_' AND d > CDate('2024-01-02') LIMIT 5`,
+  );
+  assert.strictEqual(a2s("SELECT Nz(a,0), Mid(b,1,2), Left(c,3) FROM t"), "SELECT coalesce(a,0), substr(b,1,2), xLeft(c,3) FROM t");
+});
+
+test("fnRen + fixDots prepare rules for SQLite", () => {
+  assert.strictEqual(fnRen("Left$(a,1) Mod 2, IsNull(b), Format(c,'x'), Int(d)"), "xLeft(a,1) % 2, xIsNull(b), xFormat(c,'x'), xInt(d)");
+  assert.strictEqual(fixDots(`a.b.c, "x.y".z, 'q.w.e'`), `a.c, x.z, 'q.w.e'`);
+});
+
+test("fmt formats dates from Excel", () => {
+  assert.strictEqual(fmt(new Date(Date.UTC(2024, 0, 2))), "2024-01-02");
+  assert.strictEqual(fmt(new Date(Date.UTC(2024, 0, 2, 3, 4, 5))), "2024-01-02 03:04:05");
+  assert.strictEqual(fmt("abc"), "abc");
+});
+
+test("date functions accept all supported input formats", () => {
+  for (const v of ["2024-03-15", "20240315", "15/03/2024", "2024-03-15 10:20:30"]) {
+    assert.strictEqual(fn.Year(v), 2024, v);
+    assert.strictEqual(fn.Month(v), 3, v);
+    assert.strictEqual(fn.Day(v), 15, v);
+  }
+  assert.strictEqual(fn.IsDate("abc"), 0);
+  assert.strictEqual(fn.Year(null), null);
+});
+
+test("DateDiff / DateAdd / DatePart", () => {
+  assert.strictEqual(fn.DateDiff("d", "2024-01-01", "2024-03-01"), 60);
+  assert.strictEqual(fn.DateDiff("m", "2024-01-31", "2024-03-01"), 2);
+  assert.strictEqual(fn.DateDiff("h", "2024-01-01 00:00", "2024-01-02 06:00"), 30);
+  assert.strictEqual(fn.DateAdd("m", 1, "2024-01-15"), fn.CDate("2024-02-15"));
+  assert.strictEqual(fn.DatePart("q", "2024-08-01"), 3);
+  assert.strictEqual(fn.DatePart("y", "2024-02-01"), 32);
+});
+
+test("xFormat", () => {
+  assert.strictEqual(fn.xFormat("2024-03-05 07:08:09", "dd/mm/yyyy hh:mm:ss"), "05/03/2024 07:08:09");
+  assert.strictEqual(fn.xFormat(1234.5, "#,##0.00"), "1,234.50");
+  assert.strictEqual(fn.xFormat(7, "000"), "007");
+});
+
+test("misc functions", () => {
+  assert.strictEqual(fn.Val("12abc"), 12);
+  assert.strictEqual(fn.IsNumeric(" "), 0);
+  assert.strictEqual(fn.CInt("2.6"), 3);
+  assert.strictEqual(fn.Switch(0, "a", 1, "b"), "b");
+  assert.strictEqual(fn.xRight("abcdef", 2), "ef");
+  assert.strictEqual(fn.like("nguy_n%", "NGUYỄN Văn A"), 1);
+  assert.strictEqual(fn.like("a%", "ba"), 0);
+});
