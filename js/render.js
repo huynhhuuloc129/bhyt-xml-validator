@@ -159,10 +159,46 @@ document.addEventListener("pointerdown", (e) => {
     table.style.width = total() + "px";
   };
   const up = () => {
+    window._rzT = Date.now();
     h.classList.remove("on");
     document.removeEventListener("pointermove", mv);
     document.removeEventListener("pointerup", up);
   };
   document.addEventListener("pointermove", mv);
   document.addEventListener("pointerup", up);
+});
+
+document.addEventListener("click", (e) => {
+  const th = e.target.closest && e.target.closest("th");
+  if (!th || e.target.closest(".rz") || Date.now() - (window._rzT || 0) < 300)
+    return;
+  const table = th.closest("table"),
+    tb = table.tBodies[0];
+  if (!tb) return;
+  const i = [...th.parentElement.children].indexOf(th);
+  const dir = th.dataset.sort === "asc" ? "desc" : "asc";
+  table.querySelectorAll("th").forEach((t) => {
+    delete t.dataset.sort;
+    t.classList.remove("sa", "sd");
+  });
+  th.dataset.sort = dir;
+  th.classList.add(dir === "asc" ? "sa" : "sd");
+  const val = (r) => (r.children[i] ? r.children[i].textContent.trim() : "");
+  const num = (s) => (s !== "" && !isNaN(Number(s)) ? Number(s) : null);
+  const rows = [...tb.rows];
+  rows.sort((a, b) => {
+    const x = val(a),
+      y = val(b);
+    if (x === "" && y === "") return 0;
+    if (x === "") return 1;
+    if (y === "") return -1;
+    const nx = num(x),
+      ny = num(y);
+    const c =
+      nx !== null && ny !== null
+        ? nx - ny
+        : x.localeCompare(y, "vi", { numeric: true });
+    return dir === "asc" ? c : -c;
+  });
+  rows.forEach((r) => tb.appendChild(r));
 });

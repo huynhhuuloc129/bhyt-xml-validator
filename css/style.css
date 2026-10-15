@@ -219,6 +219,16 @@ th {
   text-overflow: ellipsis;
   padding-right: 14px;
 }
+th {
+  cursor: pointer;
+  user-select: none;
+}
+th.sa::after {
+  content: " ▲";
+}
+th.sd::after {
+  content: " ▼";
+}
 .rz {
   position: absolute;
   top: 0;
