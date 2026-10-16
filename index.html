@@ -71,6 +71,20 @@
         <span class="m" id="status">Đang tải thư viện...</span>
       </div>
 
+      <details class="card" id="pcard" hidden open>
+        <summary>
+          <b>Lọc theo bệnh nhân</b> <span class="m" id="pcnt"></span>
+          <span id="psel"></span>
+        </summary>
+        <input
+          type="text"
+          id="pq"
+          placeholder="Tìm tên / MA_BN / MA_LK..."
+          style="margin-top: 8px"
+        />
+        <div id="plist" style="margin-top: 8px"></div>
+      </details>
+
       <div id="sum" class="stats"></div>
       <div id="miss" style="margin-top: 14px"></div>
       <div id="out" style="margin-top: 14px"></div>
@@ -81,6 +95,7 @@
     <script src="js/access-convert.js"></script>
     <script src="js/access-functions.js"></script>
     <script src="js/rules.js"></script>
+    <script src="js/patients.js"></script>
     <script src="js/render.js"></script>
     <script src="js/loader.js"></script>
     <script src="js/main.js"></script>

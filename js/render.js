@@ -10,10 +10,12 @@ const tr = (cells, tag) =>
 function render() {
   const q = $("q").value.trim().toLowerCase(),
     only = $("onlyerr").checked;
-  const withErr = results.filter((r) => r.rows.length && !r.err);
+  renderPatients();
+  const view = patientView();
+  const withErr = view.filter((r) => r.rows.length && !r.err);
   const total = withErr.reduce((a, r) => a + r.rows.length, 0);
   const bad = results.filter((r) => r.err).length;
-  const passed = results.filter((r) => !r.err && !r.rows.length).length;
+  const passed = view.filter((r) => !r.err && !r.rows.length).length;
   $("sum").innerHTML =
     stat(results.length, "Rule đã chạy") +
     stat(total, "Tổng dòng lỗi", "er") +
@@ -25,7 +27,14 @@ function render() {
   const em = {};
   results.forEach((r) => r.err && (em[r.err] ||= []).push(r.name));
   const groups = Object.entries(em).sort((a, b) => b[1].length - a[1].length);
-  $("miss").innerHTML = groups.length
+  // in patient view, say which rules' rows could not be linked to any patient
+  const unk = selectedPatient
+    ? results.filter((r) => r.keys?.some((k) => k == null)).map((r) => r.name)
+    : [];
+  $("miss").innerHTML = (unk.length
+    ? `<div class="card err">⚠ ${unk.length} rule có dòng lỗi không xác định được bệnh nhân (kết quả không có cột MA_LK / MA_BN / HO_TEN) nên không lọc được: ` +
+      `<span class="m">${esc(unk.slice(0, 6).join(", "))}${unk.length > 6 ? "…" : ""}</span>. Bỏ chọn bệnh nhân để xem.</div>`
+    : "") + (groups.length
     ? `<div class="card"><b>Rule không chạy được (${bad}) — gom theo nguyên nhân</b>` +
       groups
         .map(
@@ -34,11 +43,11 @@ function render() {
         )
         .join("") +
       "</div>"
-    : "";
+    : "");
 
   const out = $("out");
   out.innerHTML = "";
-  for (const r of results) {
+  for (const r of view) {
     const has = r.rows.length > 0;
     if (r.skip || (only && !has && !r.err)) continue;
     if (
@@ -69,7 +78,7 @@ function render() {
           : "") +
         sqlDetails(r.sql);
     const d = document.createElement("div");
-    d.className = "rule" + (has && results.length <= 12 ? " open" : "");
+    d.className = "rule" + (has && (selectedPatient || results.length <= 12) ? " open" : "");
     d.innerHTML =
       `<div class="rh"><span class="dot" style="background:${color}"></span><b>${esc(r.name)}</b>` +
       `<span class="m">${r.sev === "warn" ? "cảnh báo" : "lỗi"}</span>` +
@@ -84,9 +93,10 @@ function render() {
 }
 
 function exportExcel() {
+  const view = patientView();
   const wb = XLSX.utils.book_new();
   const sum = [["Rule", "Mức độ", "Số dòng lỗi", "Ghi chú"]];
-  for (const r of results)
+  for (const r of view)
     if (!r.skip)
       sum.push([
         r.name,
@@ -96,7 +106,19 @@ function exportExcel() {
       ]);
   XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(sum), "Tong hop");
   const used = { "Tong hop": 1 };
-  results.forEach((r, i) => {
+  if (!selectedPatient) {
+    const bn = [["Họ tên", "MA_BN", "MA_LK", "Rule", "Số dòng lỗi"]];
+    for (const p of patientStats())
+      for (const r of results) {
+        const n = (r.keys || []).filter((k) => k === p.key).length;
+        if (n) bn.push([p.name, p.maBn, p.lks, r.name, n]);
+      }
+    if (bn.length > 1) {
+      XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(bn), "Theo benh nhan");
+      used["Theo benh nhan"] = 1;
+    }
+  }
+  view.forEach((r, i) => {
     if (!r.rows.length) return;
     let n = r.name.replace(/[\\\/\?\*\[\]:]/g, " ").slice(0, 28) || "Rule" + i;
     while (used[n]) n = n.slice(0, 26) + "_" + i;
@@ -109,7 +131,10 @@ function exportExcel() {
   });
   XLSX.writeFile(
     wb,
-    "loi_" + (fileName.replace(/\.[^.]+$/, "") || "ketqua") + ".xlsx",
+    "loi_" +
+      (fileName.replace(/\.[^.]+$/, "") || "ketqua") +
+      (selectedPatient ? "_" + selectedPatient.replace(/[\\/:*?"<>|]/g, "_") : "") +
+      ".xlsx",
   );
 }
 

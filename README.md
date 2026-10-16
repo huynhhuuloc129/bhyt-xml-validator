@@ -7,6 +7,9 @@ Checks an `XML.xlsx` export against a set of SQL rules, entirely in the browser 
 1. Double-click `index.html` (needs internet once to load the xlsx / sql.js libraries from cdnjs).
 2. Drop the `.xlsx` file (optionally together with `.sql` rule files) onto the page.
 3. Review the results and use **⬇ Xuất Excel** to export them.
+4. To see one patient's errors across all tables, click the patient in **Lọc theo bệnh nhân**. Click again or press ✕ to clear the selection.
+
+A patient is identified by `MA_BN`, so several visits (`MA_LK`) of one person are grouped together. Each error row is linked using the first of these columns in the rule's result: `MA_LK`, `MA_BN`, `row_num` (only when the rule reads exactly one sheet), or `HO_TEN` (only when the name belongs to one patient). In patient view, rules whose rows can't be linked are listed so they aren't silently missed. The panel can be collapsed, and it remembers whether it's open.
 
 When sharing with others, send the **whole folder** (zip it) — `index.html` needs `css/` and `js/` next to it.
 
@@ -34,6 +37,7 @@ Plain `.sql` files (e.g. exported Access queries) are imported as one rule each 
 | `js/access-convert.js` | Rewrites Access SQL into SQLite SQL (`a2s`, `fnRen`, `fixDots`) |
 | `js/access-functions.js` | Access/VBA functions added to SQLite (`Year`, `DateAdd`, `Format`, `LIKE`…) |
 | `js/rules.js` | Parses the rule text and runs the rules |
+| `js/patients.js` | Links error rows to patients (`MA_LK`) and draws the patient filter |
 | `js/render.js` | Draws the results and exports them to Excel |
 | `js/loader.js` | Reads dropped files: xlsx → tables, sql → rules |
 | `js/main.js` | Startup and button / drag-drop wiring (loaded last) |

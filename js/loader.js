@@ -51,6 +51,8 @@ async function loadFile(f) {
       st.free();
       info.push({ sn, cols, n });
     }
+    indexPatients(db, info);
+    selectedPatient = null;
     fileName = f.name;
     $("fn").textContent = `${f.name} (${Math.round(f.size / 1024)} KB)`;
     $("schema").innerHTML =

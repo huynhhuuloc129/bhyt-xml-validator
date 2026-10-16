@@ -102,6 +102,7 @@ function runAll() {
       }
       results.push(o);
     }
+    for (const o of results) o.keys = rowKeys(o, pidx, createdViews);
     setStatus(
       "Xong trong " + ((performance.now() - t0) / 1000).toFixed(2) + "s",
     );

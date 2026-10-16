@@ -8,4 +8,7 @@ let SQL = null,
   db = null,
   results = [],
   fileName = "",
-  createdViews = [];
+  createdViews = [],
+  // patient index (see patients.js): key -> info, MA_LK -> key, unique HO_TEN -> key, sheet -> Map(row_num -> key)
+  pidx = { patients: new Map(), lk: new Map(), name: new Map(), sheets: {} },
+  selectedPatient = null;

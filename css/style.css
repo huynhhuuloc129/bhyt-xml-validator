@@ -271,6 +271,26 @@ pre.sql {
   font-size: 12px;
   user-select: all;
 }
+#pcard summary {
+  color: var(--tx);
+}
+#psel {
+  margin-left: 12px;
+}
+.pt {
+  max-height: 320px;
+  min-height: 0;
+}
+.pt tbody tr {
+  cursor: pointer;
+}
+.pt tbody tr:hover {
+  background: var(--bg);
+}
+.pt tbody tr.sel {
+  background: color-mix(in srgb, var(--ac) 18%, transparent);
+  font-weight: 600;
+}
 .sc {
   font-size: 12px;
   color: var(--mu);

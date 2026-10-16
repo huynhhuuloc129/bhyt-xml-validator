@@ -38,6 +38,14 @@ $("run").onclick = runAll;
 $("q").oninput = render;
 $("onlyerr").onchange = render;
 $("exp").onclick = exportExcel;
+$("pq").oninput = renderPatients;
+// patient panel open/closed is remembered per browser
+$("pcard").open = lsGet("pcard_open") !== "0";
+$("pcard").ontoggle = () => lsSet("pcard_open", $("pcard").open ? "1" : "0");
+$("plist").onclick = (e) => {
+  const row = e.target.closest("tr[data-k]");
+  if (row) selectPatient(row.dataset.k);
+};
 
 $("ldr").onclick = () => $("rf").click();
 $("rf").onchange = (e) => {
