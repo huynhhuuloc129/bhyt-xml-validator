@@ -9,9 +9,9 @@ const path = require("path");
 const load = (...files) =>
   new Function(
     files.map((f) => fs.readFileSync(path.join(__dirname, "..", f), "utf8")).join("\n") +
-      "\nreturn { a2s, fnRen, fixDots, regFns, fmt };",
+      "\nreturn { a2s, fnRen, fixDots, regFns, fmt, fmtDate, isDateCol, isXmlDateTime, fmtXmlDateTimes };",
   )();
-const { a2s, fnRen, fixDots, regFns, fmt } = load("js/utils.js", "js/access-convert.js", "js/access-functions.js");
+const { a2s, fnRen, fixDots, regFns, fmt, fmtDate, isDateCol, isXmlDateTime, fmtXmlDateTimes } = load("js/utils.js", "js/access-convert.js", "js/access-functions.js");
 const fn = {};
 regFns({ create_function: (name, f) => (fn[name] = f) });
 
@@ -32,6 +32,23 @@ test("fmt formats dates from Excel", () => {
   assert.strictEqual(fmt(new Date(Date.UTC(2024, 0, 2))), "2024-01-02");
   assert.strictEqual(fmt(new Date(Date.UTC(2024, 0, 2, 3, 4, 5))), "2024-01-02 03:04:05");
   assert.strictEqual(fmt("abc"), "abc");
+});
+
+test("fmtDate shows XML text and Access serials the same way", () => {
+  assert.strictEqual(fmtDate("202610102206"), "2026-10-10 22:06:00");
+  assert.strictEqual(fmtDate(46305.92361111111), "2026-10-10 22:10:00");
+  assert.strictEqual(fmtDate("20261010"), "2026-10-10");
+  assert.strictEqual(fmtDate(202610111048), "2026-10-11 10:48:00"); // number cell in the xlsx
+  assert.strictEqual(fmtDate(2.0833333333333335), 2.0833333333333335); // duration in hours
+  assert.strictEqual(fmtDate("abc"), "abc");
+  assert.ok(isDateCol("NGAY_VAO") && isDateCol("GioRaVien") && isDateCol("NgayKT_Oxy"));
+  assert.ok(isXmlDateTime("202610071200") && isXmlDateTime(20261007120030));
+  assert.ok(!isXmlDateTime("079090001234") && !isXmlDateTime("202613071200") && !isXmlDateTime("3916459"));
+  assert.strictEqual(
+    fmtXmlDateTimes("YL 202610071200 - 202610081230; the 079090001234"),
+    "YL 2026-10-07 12:00:00 - 2026-10-08 12:30:00; the 079090001234",
+  );
+  assert.ok(!isDateCol("GIOI_TINH") && !isDateCol("SO_LUONG"));
 });
 
 test("date functions accept all supported input formats", () => {

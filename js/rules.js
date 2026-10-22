@@ -95,7 +95,12 @@ function runAll() {
           .at(-1);
         if (last) {
           o.cols = last.columns;
-          o.rows = last.values;
+          const dc = o.cols.map(isDateCol);
+          o.rows = last.values.map((x) =>
+            x.map((v, i) =>
+              dc[i] || isXmlDateTime(v) ? fmtDate(v) : fmtXmlDateTimes(v),
+            ),
+          );
         }
       } catch (e) {
         o.err = e.message;

@@ -15,7 +15,7 @@ const { indexPatients, soleTable, rowKeys, get } = load("js/state.js", "js/utils
 const tables = {
   XML1: [
     [2, "LK1", "BN1", "NGUYỄN VĂN A", "1990-01-01"],
-    [3, 1002, "BN2", "TRẦN THỊ B", null],
+    [3, 1002, "BN2", "TRẦN THỊ B", 19850615], // raw XML date
     [4, "LK3", "BN1", "NGUYỄN VĂN A", "1990-01-01"], // second visit of BN1
     [5, "LK4", "BN4", "LÊ VĂN C", null],
     [6, "LK5", "BN5", "LÊ VĂN C", null], // same name, different patient
@@ -35,6 +35,8 @@ test("indexPatients groups visits by MA_BN and maps row_num to the patient", () 
   const p = idx.patients.get("BN1");
   assert.strictEqual(p.name, "NGUYỄN VĂN A");
   assert.deepStrictEqual([...p.lks], ["LK1", "LK3"]);
+  assert.strictEqual(p.birth, "1990-01-01");
+  assert.strictEqual(idx.patients.get("BN2").birth, "1985-06-15");
   assert.strictEqual(idx.lk.get("1002"), "BN2");
   assert.deepStrictEqual(Object.keys(idx.sheets).sort(), ["XML1", "XML3"]);
   assert.strictEqual(idx.sheets.XML3.get(2), "BN1");

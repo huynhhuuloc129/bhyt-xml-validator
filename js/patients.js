@@ -44,7 +44,7 @@ function indexPatients(d, sheets) {
         ...p,
         name: p.name || norm(name),
         maBn: p.maBn || bn,
-        birth: p.birth || norm(birth),
+        birth: p.birth || fmtDate(norm(birth)),
       });
       const nm = normName(name);
       if (nm && !ambiguous.has(nm)) {

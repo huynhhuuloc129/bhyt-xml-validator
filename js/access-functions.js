@@ -38,40 +38,7 @@ function regFns(d) {
     s != null && String(s).trim() !== "" && !isNaN(Number(s)) ? 1 : 0,
   );
 
-  // parse a date-ish value to UTC ms (yyyymmdd[hhmm[ss]], yyyy-mm-dd[ hh:mm[:ss]], dd/mm/yyyy[ hh:mm[:ss]], Excel serial)
-  const pd = (v) => {
-    if (v == null || v === "") return null;
-    const s = String(v).trim();
-    const m =
-      s.match(/^(\d{4})(\d{2})(\d{2})(?:(\d{2})(\d{2})(\d{2})?)?$/) ||
-      s.match(
-        /^(\d{4})-(\d{1,2})-(\d{1,2})(?:[ T](\d{1,2}):(\d{2})(?::(\d{2}))?)?/,
-      );
-    if (m && +m[2] >= 1 && +m[2] <= 12 && +m[3] >= 1 && +m[3] <= 31)
-      return Date.UTC(
-        +m[1],
-        m[2] - 1,
-        +m[3],
-        +(m[4] || 0),
-        +(m[5] || 0),
-        +(m[6] || 0),
-      );
-    const k = s.match(
-      /^(\d{1,2})\/(\d{1,2})\/(\d{4})(?:\s+(\d{1,2}):(\d{2})(?::(\d{2}))?)?$/,
-    );
-    if (k)
-      return Date.UTC(
-        +k[3],
-        k[2] - 1,
-        +k[1],
-        +(k[4] || 0),
-        +(k[5] || 0),
-        +(k[6] || 0),
-      );
-    if (/^\d+(\.\d+)?$/.test(s) && +s < 200000)
-      return Math.round((+s - 25569) * 864e5);
-    return null;
-  };
+  const pd = parseDate;
   const g = (v, fn) => {
     const t = pd(v);
     return t == null ? null : fn(new Date(t), t);
