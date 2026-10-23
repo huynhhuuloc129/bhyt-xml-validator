@@ -31,19 +31,21 @@ function render() {
   const unk = selectedPatient
     ? results.filter((r) => r.keys?.some((k) => k == null)).map((r) => r.name)
     : [];
-  $("miss").innerHTML = (unk.length
-    ? `<div class="card err">⚠ ${unk.length} rule có dòng lỗi không xác định được bệnh nhân (kết quả không có cột MA_LK / MA_BN / HO_TEN) nên không lọc được: ` +
-      `<span class="m">${esc(unk.slice(0, 6).join(", "))}${unk.length > 6 ? "…" : ""}</span>. Bỏ chọn bệnh nhân để xem.</div>`
-    : "") + (groups.length
-    ? `<div class="card err grp"><b>Rule không chạy được (${bad}) — gom theo nguyên nhân</b>` +
-      groups
-        .map(
-          ([m, n]) =>
-            `<div class="err">• ${esc(m)} — ${n.length} rule <span class="m">(${esc(n.slice(0, 6).join(", "))}${n.length > 6 ? "…" : ""})</span></div>`,
-        )
-        .join("") +
-      "</div>"
-    : "");
+  $("miss").innerHTML =
+    (unk.length
+      ? `<div class="card err">⚠ ${unk.length} rule có dòng lỗi không xác định được bệnh nhân (kết quả không có cột MA_LK / MA_BN / HO_TEN) nên không lọc được: ` +
+        `<span class="m">${esc(unk.slice(0, 6).join(", "))}${unk.length > 6 ? "…" : ""}</span>. Bỏ chọn bệnh nhân để xem.</div>`
+      : "") +
+    (groups.length
+      ? `<div class="card err grp"><b>Rule không chạy được (${bad}) — gom theo nguyên nhân</b>` +
+        groups
+          .map(
+            ([m, n]) =>
+              `<div class="err">• ${esc(m)} — ${n.length} rule <span class="m">(${esc(n.slice(0, 6).join(", "))}${n.length > 6 ? "…" : ""})</span></div>`,
+          )
+          .join("") +
+        "</div>"
+      : "");
 
   const out = $("out");
   out.innerHTML = "";
@@ -78,10 +80,11 @@ function render() {
           : "") +
         sqlDetails(r.sql);
     const d = document.createElement("div");
-    d.className = `rule k-${kind}` + (has && (selectedPatient || results.length <= 12) ? " open" : "");
+    d.className =
+      `rule k-${kind}` +
+      (has && (selectedPatient || results.length <= 12) ? " open" : "");
     d.innerHTML =
       `<div class="rh" tabindex="0"><span class="chev">${has || r.err ? "▶" : ""}</span><b class="rn">${esc(r.name)}</b>` +
-      `<span class="badge b-${r.sev === "warn" ? "wn" : "er"}">${r.sev === "warn" ? "Cảnh báo" : "Lỗi"}</span>` +
       `<span class="cnt">${r.err ? "⚠ lỗi SQL" : has ? rows.length + " dòng" : "✓ Đạt"}</span></div>` +
       (r.desc ? `<div class="desc">${esc(r.desc)}</div>` : "") +
       `<div class="rb">${body}</div>`;
@@ -121,7 +124,11 @@ function exportExcel() {
         if (n) bn.push([p.name, p.maBn, p.lks, r.name, n]);
       }
     if (bn.length > 1) {
-      XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(bn), "Theo benh nhan");
+      XLSX.utils.book_append_sheet(
+        wb,
+        XLSX.utils.aoa_to_sheet(bn),
+        "Theo benh nhan",
+      );
       used["Theo benh nhan"] = 1;
     }
   }
@@ -140,7 +147,9 @@ function exportExcel() {
     wb,
     "loi_" +
       (fileName.replace(/\.[^.]+$/, "") || "ketqua") +
-      (selectedPatient ? "_" + selectedPatient.replace(/[\\/:*?"<>|]/g, "_") : "") +
+      (selectedPatient
+        ? "_" + selectedPatient.replace(/[\\/:*?"<>|]/g, "_")
+        : "") +
       ".xlsx",
   );
 }

@@ -122,7 +122,7 @@ async function importSql(files) {
   const combined =
     [$("rules").value.trim(), ...parts].filter(Boolean).join("\n\n") + "\n";
   saveRules(combined);
-  $("rd").open = true;
+  showTab("sql");
   setStatus(
     `Imported ${nFiles}/${sorted.length} file(s). ${nRules} rule(s) imported. ` +
       `${countRules(combined)} rule header(s) now in the editor.` +

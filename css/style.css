@@ -261,16 +261,8 @@ details > summary {
   cursor: pointer;
   color: var(--mu);
 }
-#rd > summary {
-  color: var(--tx);
-  list-style-position: outside;
-  margin-left: 16px;
-}
-#rd > summary .m {
-  font-weight: normal;
-}
 .hint {
-  margin: 10px 0;
+  margin: 0 0 10px;
 }
 
 /* ---------- Summary ---------- */

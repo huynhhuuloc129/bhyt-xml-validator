@@ -13,6 +13,20 @@ function lsSet(k, v) {
 function saveRules(v) {
   $("rules").value = v;
   lsSet("rules_v1", v);
+  showRuleCount();
+}
+const showRuleCount = () => {
+  const n = countRules($("rules").value);
+  $("rcnt").textContent = n ? `(${n})` : "";
+};
+// Show tab t (its panel has id "tab-" + t) and hide the other tabs in the same bar
+function showTab(t) {
+  const bar = document.querySelector(`.tab[data-tab="${t}"]`).parentElement;
+  bar.querySelectorAll(".tab").forEach((b) => {
+    const on = b.dataset.tab === t;
+    b.classList.toggle("on", on);
+    $("tab-" + b.dataset.tab).hidden = !on;
+  });
 }
 function esc(s) {
   return String(s ?? "").replace(

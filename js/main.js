@@ -1,9 +1,11 @@
 // Startup and event wiring. Loaded last.
 
 $("rules").value = lsGet("rules_v1") || SAMPLE;
-$("rules").addEventListener("input", () =>
-  lsSet("rules_v1", $("rules").value),
-);
+showRuleCount();
+$("rules").addEventListener("input", () => {
+  lsSet("rules_v1", $("rules").value);
+  showRuleCount();
+});
 
 
 
@@ -47,17 +49,13 @@ $("xall").onclick = () => {
 $("pq").oninput = renderPatients;
 
 // ---------- Tabs ----------
-const showTab = (t) => {
-  document
-    .querySelectorAll(".tab")
-    .forEach((b) => b.classList.toggle("on", b.dataset.tab === t));
-  $("tab-rules").hidden = t !== "rules";
-  $("tab-pats").hidden = t !== "pats";
-};
-$("tabs").onclick = (e) => {
-  const b = e.target.closest(".tab");
-  if (b) showTab(b.dataset.tab);
-};
+document.querySelectorAll(".tabs").forEach(
+  (bar) =>
+    (bar.onclick = (e) => {
+      const b = e.target.closest(".tab");
+      if (b) showTab(b.dataset.tab);
+    }),
+);
 // picking a patient jumps to their errors; unpicking stays on the list
 $("plist").onclick = (e) => {
   const row = e.target.closest("tr[data-k]");

@@ -23,7 +23,14 @@
         <button class="g sm" id="theme" title="Đổi giao diện sáng / tối"></button>
       </header>
 
-      <div class="card">
+      <div class="tabs row">
+        <button class="tab on" data-tab="file">📂 File XML</button>
+        <button class="tab" data-tab="sql">
+          📜 Rule SQL <span class="m" id="rcnt"></span>
+        </button>
+      </div>
+
+      <div class="card" id="tab-file">
         <div id="drop">
           <span class="big">📂 Kéo thả file .xlsx vào đây hoặc bấm để chọn</span>
           Có thể thả kèm cả các file .sql chứa rule
@@ -39,32 +46,26 @@
         <div class="sc" id="schema"></div>
       </div>
 
-      <div class="card">
-        <details id="rd">
-          <summary>
-            <b>Danh sách rule SQL</b>
-            <span class="m">— bấm để sửa / dán view của bạn</span>
-          </summary>
-          <p class="m hint">
-            Định dạng: mỗi rule bắt đầu bằng
-            <code>-- @rule Tên | error</code> (hoặc <code>warn</code>). Dòng
-            <code>-- mô tả</code> ngay sau là mô tả. Câu SELECT trả về các dòng
-            lỗi (nên có cột <code>row_num</code>). Phần trước rule đầu tiên là
-            script chạy trước (tạo view trung gian...).
-          </p>
-          <textarea id="rules" spellcheck="false"></textarea>
-          <div class="row" style="margin-top: 10px">
-            <button id="ldr">📥 Nhập nhiều file .sql</button>
-            <label class="m"
-              ><input type="checkbox" id="conv" checked /> Tự chuyển cú pháp
-              Access → SQLite</label
-            >
-            <span class="grow"></span>
-            <button class="g" id="svr">⬇ Tải rule xuống</button>
-            <button class="g" id="rst">↺ Khôi phục rule mẫu</button>
-            <input type="file" id="rf" accept=".sql,.txt" multiple hidden />
-          </div>
-        </details>
+      <div class="card" id="tab-sql" hidden>
+        <p class="m hint">
+          Định dạng: mỗi rule bắt đầu bằng
+          <code>-- @rule Tên | error</code> (hoặc <code>warn</code>). Dòng
+          <code>-- mô tả</code> ngay sau là mô tả. Câu SELECT trả về các dòng
+          lỗi (nên có cột <code>row_num</code>). Phần trước rule đầu tiên là
+          script chạy trước (tạo view trung gian...).
+        </p>
+        <textarea id="rules" spellcheck="false"></textarea>
+        <div class="row" style="margin-top: 10px">
+          <button id="ldr">📥 Nhập nhiều file .sql</button>
+          <label class="m"
+            ><input type="checkbox" id="conv" checked /> Tự chuyển cú pháp
+            Access → SQLite</label
+          >
+          <span class="grow"></span>
+          <button class="g" id="svr">⬇ Tải rule xuống</button>
+          <button class="g" id="rst">↺ Khôi phục rule mẫu</button>
+          <input type="file" id="rf" accept=".sql,.txt" multiple hidden />
+        </div>
       </div>
 
       <div class="card row toolbar">

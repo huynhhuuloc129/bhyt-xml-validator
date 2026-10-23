@@ -5,7 +5,7 @@ Checks an `XML.xlsx` export against a set of SQL rules, entirely in the browser 
 ## Using it
 
 1. Double-click `index.html` (needs internet once to load the xlsx / sql.js libraries from cdnjs).
-2. Drop the `.xlsx` file (optionally together with `.sql` rule files) onto the page.
+2. Drop the `.xlsx` file (optionally together with `.sql` rule files) onto the page in the **📂 File XML** tab. Rules are edited or imported in the **📜 Rule SQL** tab.
 3. Review the results and use **⬇ Xuất Excel** to export them.
 4. To see one patient's errors across all tables, open the **Lọc theo bệnh nhân** tab and click the patient — the page switches back to the rule results, filtered to that patient. Click the row again or press ✕ to clear the selection.
 
