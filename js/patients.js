@@ -130,19 +130,14 @@ const patientLabel = (k) => {
 };
 
 function renderPatients() {
-  const card = $("pcard");
-  card.hidden = !results.length;
+  $("tabs").hidden = !results.length;
   if (!results.length) return;
   const list = patientStats();
-  $("pcnt").textContent = list.length ? `(${list.length} bệnh nhân có lỗi)` : "";
+  $("pcnt").textContent = list.length ? `(${list.length})` : "";
   $("psel").innerHTML = selectedPatient
-    ? `Đang xem: <b>${esc(patientLabel(selectedPatient))}</b> <button class="g" id="pclr">✕ Bỏ chọn</button>`
+    ? `Đang xem: <b>${esc(patientLabel(selectedPatient))}</b> <button class="g sm" id="pclr">✕ Bỏ chọn</button>`
     : "";
-  if (selectedPatient)
-    $("pclr").onclick = (e) => {
-      e.preventDefault(); // don't toggle the panel
-      selectPatient(null);
-    };
+  if (selectedPatient) $("pclr").onclick = () => selectPatient(null);
   if (!list.length) {
     $("plist").innerHTML =
       `<div class="m">Không gắn được dòng lỗi nào với bệnh nhân (kết quả rule cần có cột MA_LK, MA_BN, HO_TEN, hoặc row_num của một bảng có MA_LK).</div>`;
@@ -168,7 +163,7 @@ function renderPatients() {
       )
       .join("") +
     `</tbody></table></div>` +
-    `<div class="m">${shown.length > 300 ? `Hiển thị 300/${shown.length}. Gõ để tìm thêm. ` : ""}Bấm một dòng để xem tất cả lỗi của bệnh nhân đó, bấm lại để bỏ chọn.</div>`;
+    `<div class="m">${shown.length > 300 ? `Hiển thị 300/${shown.length}. Gõ để tìm thêm. ` : ""}Bấm một dòng để xem tất cả lỗi của bệnh nhân đó ở tab "Kết quả theo rule", bấm lại để bỏ chọn.</div>`;
 }
 
 function selectPatient(k) {

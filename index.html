@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="vi">
+<html lang="vi" data-theme="light">
   <head>
     <meta charset="utf-8" />
     <meta
@@ -13,13 +13,21 @@
   </head>
   <body>
     <div class="w">
-      <h1>🔍 Kiểm tra lỗi file XML.xlsx</h1>
+      <header class="row">
+        <div class="grow">
+          <h1>🔍 Kiểm tra lỗi file XML.xlsx</h1>
+          <p class="sub">
+            Dữ liệu được xử lý ngay trên trình duyệt, không gửi đi đâu.
+          </p>
+        </div>
+        <button class="g sm" id="theme" title="Đổi giao diện sáng / tối"></button>
+      </header>
 
       <div class="card">
         <div id="drop">
-          📂 Kéo thả file .xlsx vào đây hoặc bấm để chọn (có thể thả kèm cả các
-          file .sql)
-          <div class="m" id="fn"></div>
+          <span class="big">📂 Kéo thả file .xlsx vào đây hoặc bấm để chọn</span>
+          Có thể thả kèm cả các file .sql chứa rule
+          <div id="fn"></div>
         </div>
         <input
           type="file"
@@ -34,9 +42,10 @@
       <div class="card">
         <details id="rd">
           <summary>
-            <b>Danh sách rule SQL</b> (bấm để sửa / dán 50 view của bạn)
+            <b>Danh sách rule SQL</b>
+            <span class="m">— bấm để sửa / dán view của bạn</span>
           </summary>
-          <p class="m">
+          <p class="m hint">
             Định dạng: mỗi rule bắt đầu bằng
             <code>-- @rule Tên | error</code> (hoặc <code>warn</code>). Dòng
             <code>-- mô tả</code> ngay sau là mô tả. Câu SELECT trả về các dòng
@@ -44,50 +53,56 @@
             script chạy trước (tạo view trung gian...).
           </p>
           <textarea id="rules" spellcheck="false"></textarea>
-          <div class="row" style="margin-top: 8px">
-            <button id="ldr">📥 Import many .sql files</button>
+          <div class="row" style="margin-top: 10px">
+            <button id="ldr">📥 Nhập nhiều file .sql</button>
             <label class="m"
-              ><input type="checkbox" id="conv" checked /> Auto-convert Access
-              syntax → SQLite</label
+              ><input type="checkbox" id="conv" checked /> Tự chuyển cú pháp
+              Access → SQLite</label
             >
-            <button class="g" id="svr">Tải rule xuống</button>
+            <span class="grow"></span>
+            <button class="g" id="svr">⬇ Tải rule xuống</button>
+            <button class="g" id="rst">↺ Khôi phục rule mẫu</button>
             <input type="file" id="rf" accept=".sql,.txt" multiple hidden />
           </div>
         </details>
       </div>
 
-      <div class="card row">
+      <div class="card row toolbar">
         <button id="run" disabled>▶ Chạy kiểm tra</button>
         <button class="g" id="exp" disabled>⬇ Xuất Excel</button>
         <input
-          type="text"
+          type="search"
           id="q"
-          placeholder="Lọc theo tên rule / nội dung lỗi..."
+          placeholder="🔎 Lọc theo tên rule / nội dung lỗi..."
         />
         <label class="m"
           ><input type="checkbox" id="onlyerr" checked /> Chỉ hiện rule có
           lỗi</label
         >
+        <button class="g sm" id="xall" title="Mở / đóng tất cả rule">
+          ⇕ Mở / đóng tất cả
+        </button>
         <span class="m" id="status">Đang tải thư viện...</span>
       </div>
 
-      <details class="card" id="pcard" hidden open>
-        <summary>
-          <b>Lọc theo bệnh nhân</b> <span class="m" id="pcnt"></span>
-          <span id="psel"></span>
-        </summary>
-        <input
-          type="text"
-          id="pq"
-          placeholder="Tìm tên / MA_BN / MA_LK..."
-          style="margin-top: 8px"
-        />
-        <div id="plist" style="margin-top: 8px"></div>
-      </details>
+      <div class="tabs row" id="tabs" hidden>
+        <button class="tab on" data-tab="rules">📋 Kết quả theo rule</button>
+        <button class="tab" data-tab="pats">
+          👤 Lọc theo bệnh nhân <span class="m" id="pcnt"></span>
+        </button>
+        <span id="psel"></span>
+      </div>
 
-      <div id="sum" class="stats"></div>
-      <div id="miss" style="margin-top: 14px"></div>
-      <div id="out" style="margin-top: 14px"></div>
+      <div id="tab-rules">
+        <div id="sum" class="stats"></div>
+        <div id="miss"></div>
+        <div id="out"></div>
+      </div>
+
+      <div id="tab-pats" class="card" hidden>
+        <input type="search" id="pq" placeholder="🔎 Tìm tên / MA_BN / MA_LK..." />
+        <div id="plist"></div>
+      </div>
     </div>
 
     <script src="js/state.js"></script>

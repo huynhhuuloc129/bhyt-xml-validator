@@ -1,7 +1,7 @@
 // Draws the summary, the grouped SQL errors and each rule's result table; exports results to Excel.
 
-const stat = (n, label, color) =>
-  `<div class="card st"><b${color ? ` style="color:var(--${color})"` : ""}>${n}</b>${label}</div>`;
+const stat = (n, label, kind) =>
+  `<div class="card st${kind ? " k-" + kind : ""}"><span>${label}</span><b>${n}</b></div>`;
 const sqlDetails = (sql) =>
   `<details><summary>Xem SQL đã chạy</summary><pre class="sql">${esc(sql)}</pre></details>`;
 const tr = (cells, tag) =>
@@ -35,7 +35,7 @@ function render() {
     ? `<div class="card err">⚠ ${unk.length} rule có dòng lỗi không xác định được bệnh nhân (kết quả không có cột MA_LK / MA_BN / HO_TEN) nên không lọc được: ` +
       `<span class="m">${esc(unk.slice(0, 6).join(", "))}${unk.length > 6 ? "…" : ""}</span>. Bỏ chọn bệnh nhân để xem.</div>`
     : "") + (groups.length
-    ? `<div class="card"><b>Rule không chạy được (${bad}) — gom theo nguyên nhân</b>` +
+    ? `<div class="card err grp"><b>Rule không chạy được (${bad}) — gom theo nguyên nhân</b>` +
       groups
         .map(
           ([m, n]) =>
@@ -60,7 +60,7 @@ function render() {
     const rows = q
       ? r.rows.filter((x) => (r.name + x.join(" ")).toLowerCase().includes(q))
       : r.rows;
-    const color = `var(--${r.err ? "wn" : !has ? "ok" : r.sev === "warn" ? "wn" : "er"})`;
+    const kind = r.err ? "wn" : !has ? "ok" : r.sev === "warn" ? "wn" : "er";
     let body = "";
     if (r.err)
       body =
@@ -78,18 +78,25 @@ function render() {
           : "") +
         sqlDetails(r.sql);
     const d = document.createElement("div");
-    d.className = "rule" + (has && (selectedPatient || results.length <= 12) ? " open" : "");
+    d.className = `rule k-${kind}` + (has && (selectedPatient || results.length <= 12) ? " open" : "");
     d.innerHTML =
-      `<div class="rh"><span class="dot" style="background:${color}"></span><b>${esc(r.name)}</b>` +
-      `<span class="m">${r.sev === "warn" ? "cảnh báo" : "lỗi"}</span>` +
-      `<span class="cnt" style="color:${color}">${r.err ? "lỗi SQL" : has ? rows.length + " dòng" : "✓"}</span></div>` +
+      `<div class="rh" tabindex="0"><span class="chev">${has || r.err ? "▶" : ""}</span><b class="rn">${esc(r.name)}</b>` +
+      `<span class="badge b-${r.sev === "warn" ? "wn" : "er"}">${r.sev === "warn" ? "Cảnh báo" : "Lỗi"}</span>` +
+      `<span class="cnt">${r.err ? "⚠ lỗi SQL" : has ? rows.length + " dòng" : "✓ Đạt"}</span></div>` +
       (r.desc ? `<div class="desc">${esc(r.desc)}</div>` : "") +
       `<div class="rb">${body}</div>`;
-    d.querySelector(".rh").onclick = () => d.classList.toggle("open");
+    const rh = d.querySelector(".rh");
+    rh.onclick = () => d.classList.toggle("open");
+    rh.onkeydown = (e) => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        rh.click();
+      }
+    };
     out.appendChild(d);
   }
   if (!out.children.length)
-    out.innerHTML = `<div class="card m">${results.length ? "🎉 Không có lỗi nào (hoặc không khớp bộ lọc)." : "Chưa có kết quả."}</div>`;
+    out.innerHTML = `<div class="card m empty">${results.length ? "🎉 Không có lỗi nào (hoặc không khớp bộ lọc)." : "Chưa có kết quả."}</div>`;
 }
 
 function exportExcel() {

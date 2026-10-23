@@ -55,9 +55,10 @@ async function loadFile(f) {
     selectedPatient = null;
     fileName = f.name;
     $("fn").textContent = `${f.name} (${Math.round(f.size / 1024)} KB)`;
+    $("drop").classList.add("has");
     $("schema").innerHTML =
-      "<b>Các bảng đã nạp:</b><br>" +
-      info.map((t) => `• <b>${esc(t.sn)}</b> (${t.n} dòng)`).join("<br>");
+      "<span>Các bảng đã nạp:</span>" +
+      info.map((t) => `<span class="chip"><b>${esc(t.sn)}</b> · ${t.n} dòng</span>`).join("");
     $("run").disabled = false;
     runAll();
   } catch (e) {
