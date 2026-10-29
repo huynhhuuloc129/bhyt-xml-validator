@@ -18,6 +18,12 @@ function saveRules(v) {
 const showRuleCount = () => {
   const n = countRules($("rules").value);
   $("rcnt").textContent = n ? `(${n})` : "";
+  // before the first run, the stat tiles show the rule count and placeholders
+  if (!results.length)
+    $("sum").innerHTML =
+      stat(n, "Tổng số rule") +
+      stat('<i class="dash"></i>', "Đạt", "ok") +
+      stat('<i class="dash"></i>', "Có lỗi", "er");
 };
 // Show tab t (its panel has id "tab-" + t) and hide the other tabs in the same bar
 function showTab(t) {

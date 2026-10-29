@@ -12,98 +12,166 @@
     <link rel="stylesheet" href="css/style.css" />
   </head>
   <body>
+    <nav class="nav">
+      <span class="logo">
+        <svg viewBox="0 0 24 24">
+          <circle cx="11" cy="11" r="7" />
+          <path d="m8 11 2 2 4-4M21 21l-4.3-4.3" />
+        </svg>
+      </span>
+      <div class="brand">
+        <h1>Kiểm tra lỗi XML</h1>
+      </div>
+      <button class="ib" id="theme" title="Đổi giao diện sáng / tối"></button>
+    </nav>
+
     <div class="w">
-      <header class="row">
-        <div class="grow">
-          <h1>🔍 Kiểm tra lỗi file XML.xlsx</h1>
-          <p class="sub">
-            Dữ liệu được xử lý ngay trên trình duyệt, không gửi đi đâu.
+      <div id="sum" class="stats"></div>
+
+      <section class="card">
+        <div class="ch">
+          <svg class="ci ok" viewBox="0 0 24 24">
+            <rect x="3" y="3" width="18" height="18" rx="2" />
+            <path d="M3 9h18M3 15h18M9 3v18" />
+          </svg>
+          <div class="grow">
+            <h2>File kiểm tra</h2>
+            <p class="m">Excel (.xlsx) và SQL rules (.sql)</p>
+          </div>
+          <div class="tabs seg">
+            <button class="tab on" data-tab="file">File XML</button>
+            <button class="tab" data-tab="sql">
+              Rule SQL <span class="m" id="rcnt"></span>
+            </button>
+          </div>
+          <button class="ib ac" id="pick" title="Chọn file">
+            <svg viewBox="0 0 24 24">
+              <path
+                d="M12 15V3m-5 5 5-5 5 5M4 15v4a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-4"
+              />
+            </svg>
+          </button>
+        </div>
+
+        <div id="tab-file">
+          <div id="drop">
+            <svg class="up" viewBox="0 0 24 24">
+              <path d="M12 13v8m-4-4 4-4 4 4" />
+              <path d="M20 16.6A5 5 0 0 0 18 7h-1.3A8 8 0 1 0 4 15.2" />
+            </svg>
+            <span class="big">Kéo thả file vào đây</span>
+            hoặc chọn file từ máy tính — có thể thả kèm các file .sql chứa rule
+            <div id="fn"></div>
+          </div>
+          <input
+            type="file"
+            id="file"
+            accept=".xlsx,.xlsm,.xls,.csv,.sql,.txt"
+            multiple
+            hidden
+          />
+          <div class="sc" id="schema"></div>
+        </div>
+
+        <div id="tab-sql" hidden>
+          <p class="m hint">
+            Định dạng: mỗi rule bắt đầu bằng
+            <code>-- @rule Tên | error</code> (hoặc <code>warn</code>). Dòng
+            <code>-- mô tả</code> ngay sau là mô tả. Câu SELECT trả về các dòng
+            lỗi (nên có cột <code>row_num</code>). Phần trước rule đầu tiên là
+            script chạy trước (tạo view trung gian...).
           </p>
+          <textarea id="rules" spellcheck="false"></textarea>
+          <div class="row" style="margin-top: 10px">
+            <button class="g" id="ldr">📥 Upload nhiều file .sql</button>
+            <label class="m"
+              ><input type="checkbox" id="conv" checked /> Chuyển cú pháp sang
+              SQLite</label
+            >
+            <span class="grow"></span>
+            <button class="g" id="svr">⬇ Tải xuống</button>
+            <button class="g" id="rst">↺ Khôi phục mặc định</button>
+            <input type="file" id="rf" accept=".sql,.txt" multiple hidden />
+          </div>
         </div>
-        <button class="g sm" id="theme" title="Đổi giao diện sáng / tối"></button>
-      </header>
+      </section>
 
-      <div class="tabs row">
-        <button class="tab on" data-tab="file">📂 File XML</button>
-        <button class="tab" data-tab="sql">
-          📜 Rule SQL <span class="m" id="rcnt"></span>
-        </button>
-      </div>
-
-      <div class="card" id="tab-file">
-        <div id="drop">
-          <span class="big">📂 Kéo thả file .xlsx vào đây hoặc bấm để chọn</span>
-          Có thể thả kèm cả các file .sql chứa rule
-          <div id="fn"></div>
+      <section class="card">
+        <div class="ch">
+          <div class="grow">
+            <h2>Kết quả kiểm tra</h2>
+            <p class="m">Xem và lọc các rule không hợp lệ</p>
+          </div>
+          <span class="m" id="status">Đang tải thư viện...</span>
+          <button class="g" id="exp" disabled>⬇ Xuất Excel</button>
+          <button class="lg" id="run" disabled>
+            <svg viewBox="0 0 24 24">
+              <circle cx="12" cy="12" r="9" />
+              <path d="m10 8.5 5 3.5-5 3.5z" />
+            </svg>
+            Chạy kiểm tra
+          </button>
         </div>
-        <input
-          type="file"
-          id="file"
-          accept=".xlsx,.xlsm,.xls,.csv,.sql,.txt"
-          multiple
-          hidden
-        />
-        <div class="sc" id="schema"></div>
-      </div>
 
-      <div class="card" id="tab-sql" hidden>
-        <p class="m hint">
-          Định dạng: mỗi rule bắt đầu bằng
-          <code>-- @rule Tên | error</code> (hoặc <code>warn</code>). Dòng
-          <code>-- mô tả</code> ngay sau là mô tả. Câu SELECT trả về các dòng
-          lỗi (nên có cột <code>row_num</code>). Phần trước rule đầu tiên là
-          script chạy trước (tạo view trung gian...).
-        </p>
-        <textarea id="rules" spellcheck="false"></textarea>
-        <div class="row" style="margin-top: 10px">
-          <button id="ldr">📥 Nhập nhiều file .sql</button>
-          <label class="m"
-            ><input type="checkbox" id="conv" checked /> Tự chuyển cú pháp
-            Access → SQLite</label
+        <div class="toolbar">
+          <svg class="si" viewBox="0 0 24 24">
+            <circle cx="11" cy="11" r="7" />
+            <path d="m21 21-4.3-4.3" />
+          </svg>
+          <input type="search" id="q" placeholder="Tìm lỗi..." />
+          <button
+            class="ib"
+            id="opt"
+            title="Tuỳ chọn hiển thị"
+            aria-expanded="false"
           >
-          <span class="grow"></span>
-          <button class="g" id="svr">⬇ Tải rule xuống</button>
-          <button class="g" id="rst">↺ Khôi phục rule mẫu</button>
-          <input type="file" id="rf" accept=".sql,.txt" multiple hidden />
+            <svg viewBox="0 0 24 24">
+              <path d="M4 6h9m4 0h3M4 12h3m4 0h9M4 18h11m4 0h1" />
+              <path d="M15 4v4M9 10v4M17 16v4" />
+            </svg>
+          </button>
         </div>
-      </div>
+        <div class="opts row" id="opts" hidden>
+          <label class="m"
+            ><input type="checkbox" id="onlyerr" checked /> Chỉ hiện rule có
+            lỗi</label
+          >
+          <button class="g sm" id="xall" title="Mở / đóng tất cả rule">
+            ⇕ Mở / đóng tất cả
+          </button>
+        </div>
 
-      <div class="card row toolbar">
-        <button id="run" disabled>▶ Chạy kiểm tra</button>
-        <button class="g" id="exp" disabled>⬇ Xuất Excel</button>
-        <input
-          type="search"
-          id="q"
-          placeholder="🔎 Lọc theo tên rule / nội dung lỗi..."
-        />
-        <label class="m"
-          ><input type="checkbox" id="onlyerr" checked /> Chỉ hiện rule có
-          lỗi</label
-        >
-        <button class="g sm" id="xall" title="Mở / đóng tất cả rule">
-          ⇕ Mở / đóng tất cả
-        </button>
-        <span class="m" id="status">Đang tải thư viện...</span>
-      </div>
+        <div id="empty" class="es">
+          <svg viewBox="0 0 24 24">
+            <rect x="5" y="4" width="14" height="17" rx="2" />
+            <path d="M9 4V3h6v1M9 13l2 2 4-4" />
+          </svg>
+          <b>Chưa có kết quả</b>
+          <span>Tải file lên và chạy kiểm tra để xem báo cáo tại đây.</span>
+        </div>
 
-      <div class="tabs row" id="tabs" hidden>
-        <button class="tab on" data-tab="rules">📋 Kết quả theo rule</button>
-        <button class="tab" data-tab="pats">
-          👤 Lọc theo bệnh nhân <span class="m" id="pcnt"></span>
-        </button>
-        <span id="psel"></span>
-      </div>
+        <div class="tabs row" id="tabs" hidden>
+          <button class="tab on" data-tab="rules">📋 Kết quả theo rule</button>
+          <button class="tab" data-tab="pats">
+            👤 Lọc theo bệnh nhân <span class="m" id="pcnt"></span>
+          </button>
+          <span id="psel"></span>
+        </div>
 
-      <div id="tab-rules">
-        <div id="sum" class="stats"></div>
-        <div id="miss"></div>
-        <div id="out"></div>
-      </div>
+        <div id="tab-rules">
+          <div id="miss"></div>
+          <div id="out"></div>
+        </div>
 
-      <div id="tab-pats" class="card" hidden>
-        <input type="search" id="pq" placeholder="🔎 Tìm tên / MA_BN / MA_LK..." />
-        <div id="plist"></div>
-      </div>
+        <div id="tab-pats" hidden>
+          <input
+            type="search"
+            id="pq"
+            placeholder="🔎 Tìm tên / MA_BN / MA_LK..."
+          />
+          <div id="plist"></div>
+        </div>
+      </section>
     </div>
 
     <script src="js/state.js"></script>

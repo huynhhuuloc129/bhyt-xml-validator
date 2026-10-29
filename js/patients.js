@@ -131,6 +131,7 @@ const patientLabel = (k) => {
 
 function renderPatients() {
   $("tabs").hidden = !results.length;
+  $("empty").hidden = !!results.length;
   if (!results.length) return;
   const list = patientStats();
   $("pcnt").textContent = list.length ? `(${list.length})` : "";

@@ -7,19 +7,17 @@ $("rules").addEventListener("input", () => {
   showRuleCount();
 });
 
-
-
 initSqlJs()
   .then((s) => {
     SQL = s;
-    setStatus("Sẵn sàng. Hãy chọn file.");
+    setStatus("SQLite đã sẵn sàng");
   })
   .catch((e) => setStatus("Lỗi tải SQLite: " + e));
 
 // ---------- Upload ----------
 const drop = $("drop"),
   fi = $("file");
-drop.onclick = () => fi.click();
+drop.onclick = $("pick").onclick = () => fi.click();
 fi.onchange = () => {
   route(fi.files);
   fi.value = "";
@@ -47,6 +45,11 @@ $("xall").onclick = () => {
   rs.forEach((r) => r.classList.toggle("open", open));
 };
 $("pq").oninput = renderPatients;
+$("opt").onclick = () => {
+  const show = $("opts").hidden;
+  $("opts").hidden = !show;
+  $("opt").setAttribute("aria-expanded", show);
+};
 
 // ---------- Tabs ----------
 document.querySelectorAll(".tabs").forEach(
@@ -65,14 +68,20 @@ $("plist").onclick = (e) => {
 };
 
 // ---------- Theme: light by default, choice remembered per browser ----------
+const ICON_SUN =
+  '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4" /><path d="M12 2v2m0 16v2M4.9 4.9l1.4 1.4m11.4 11.4 1.4 1.4M2 12h2m16 0h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" /></svg>';
+const ICON_MOON =
+  '<svg viewBox="0 0 24 24"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z" /></svg>';
 const setTheme = (t) => {
   document.documentElement.dataset.theme = t;
-  $("theme").textContent = t === "dark" ? "☀️ Sáng" : "🌙 Tối";
+  $("theme").innerHTML = t === "dark" ? ICON_SUN : ICON_MOON;
   lsSet("theme", t);
 };
 setTheme(lsGet("theme") === "dark" ? "dark" : "light");
 $("theme").onclick = () =>
-  setTheme(document.documentElement.dataset.theme === "dark" ? "light" : "dark");
+  setTheme(
+    document.documentElement.dataset.theme === "dark" ? "light" : "dark",
+  );
 
 $("ldr").onclick = () => $("rf").click();
 $("rf").onchange = (e) => {

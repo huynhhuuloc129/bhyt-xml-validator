@@ -1,7 +1,7 @@
 // Draws the summary, the grouped SQL errors and each rule's result table; exports results to Excel.
 
 const stat = (n, label, kind) =>
-  `<div class="card st${kind ? " k-" + kind : ""}"><span>${label}</span><b>${n}</b></div>`;
+  `<div class="st${kind ? " k-" + kind : ""}"><span>${label}</span><b>${n}</b></div>`;
 const sqlDetails = (sql) =>
   `<details><summary>Xem SQL đã chạy</summary><pre class="sql">${esc(sql)}</pre></details>`;
 const tr = (cells, tag) =>
