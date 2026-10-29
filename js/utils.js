@@ -91,6 +91,19 @@ function parseDate(v) {
 
 // Result columns named like a date/time (NGAY_VAO, GioRaVien, NgayBD_Oxy...) but not GIOI_TINH
 const isDateCol = (c) => /ngay|gio(?!i)|date|time|thoi_?gian/i.test(c);
+// Doses per day from LIEU_DUNG text: "1 Viên/lần * 2 lần/ngày * 30 ngày" -> 2; null when not stated
+function timesPerDay(v) {
+  const m = String(v ?? "")
+    .normalize("NFC")
+    .match(/(\d+(?:[.,]\d+)?)\s*l[ầa]n\s*\/\s*ng[àa]y/i);
+  return m ? +m[1].replace(",", ".") : null;
+}
+// A date-named column is really a duration (e.g. TIME = DateDiff('n', ...)) when any of its
+// plain numbers is too small to be an Access date serial; then none of its numbers are dates
+const isDurationCol = (rows, i) =>
+  rows.some(
+    (x) => typeof x[i] === "number" && !isXmlDateTime(x[i]) && x[i] < 10000,
+  );
 // XML date-time text (yyyymmddhhmm[ss]) in any column, e.g. 202610071200
 // also when it sits inside longer text, e.g. "202610071200 - 202610081200"
 const XML_DT =

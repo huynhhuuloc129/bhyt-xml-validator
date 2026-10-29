@@ -9,9 +9,9 @@ const path = require("path");
 const load = (...files) =>
   new Function(
     files.map((f) => fs.readFileSync(path.join(__dirname, "..", f), "utf8")).join("\n") +
-      "\nreturn { a2s, fnRen, fixDots, regFns, fmt, fmtDate, isDateCol, isXmlDateTime, fmtXmlDateTimes };",
+      "\nreturn { a2s, fnRen, fixDots, regFns, fmt, fmtDate, isDateCol, isDurationCol, timesPerDay, isXmlDateTime, fmtXmlDateTimes };",
   )();
-const { a2s, fnRen, fixDots, regFns, fmt, fmtDate, isDateCol, isXmlDateTime, fmtXmlDateTimes } = load("js/utils.js", "js/access-convert.js", "js/access-functions.js");
+const { a2s, fnRen, fixDots, regFns, fmt, fmtDate, isDateCol, isDurationCol, timesPerDay, isXmlDateTime, fmtXmlDateTimes } = load("js/utils.js", "js/access-convert.js", "js/access-functions.js");
 const fn = {};
 regFns({ create_function: (name, f) => (fn[name] = f) });
 
@@ -51,6 +51,12 @@ test("fmtDate shows XML text and Access serials the same way", () => {
   assert.ok(!isDateCol("GIOI_TINH") && !isDateCol("SO_LUONG"));
 });
 
+test("a date-named column of minutes is a duration, not dates", () => {
+  // DAUVAO: TIME = DateDiff('n', NGAY_VAO, NGAY_RA); 14412 minutes must not become 1939-06-16
+  assert.ok(isDurationCol([[14412], [491], [242]], 0));
+  assert.ok(!isDurationCol([[46305.92361111111], ["202610102206"], [202610111048], [null]], 0));
+});
+
 test("date functions accept all supported input formats", () => {
   for (const v of ["2024-03-15", "20240315", "15/03/2024", "2024-03-15 10:20:30"]) {
     assert.strictEqual(fn.Year(v), 2024, v);
@@ -84,4 +90,11 @@ test("misc functions", () => {
   assert.strictEqual(fn.xRight("abcdef", 2), "ef");
   assert.strictEqual(fn.like("nguy_n%", "NGUYỄN Văn A"), 1);
   assert.strictEqual(fn.like("a%", "ba"), 0);
+});
+
+test("timesPerDay reads doses per day from LIEU_DUNG", () => {
+  assert.strictEqual(timesPerDay("1 Viên/lần * 1 lần/ngày * 40 ngày [1 Viên/ngày]"), 1);
+  assert.strictEqual(timesPerDay("1 Viên/lần * 2 lần/ngày * 30 ngày [2 Viên/ngày]"), 2);
+  assert.strictEqual(timesPerDay("1 Viên/lần * 3 lan / ngay"), 3);
+  assert.strictEqual(timesPerDay("Uống sáng"), null);
 });

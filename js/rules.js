@@ -36,6 +36,15 @@ function parseRules(text) {
   return { setup, rules };
 }
 
+// Extra conditions applied on top of a rule's own SQL, keyed by rule name (case-insensitive)
+const RULE_FILTERS = {
+  DAUVAO: `"TIME" <= 3`, // only stays of 3 minutes or less
+};
+const ruleFilter = (name) =>
+  Object.entries(RULE_FILTERS).find(
+    ([k]) => k.toLowerCase() === name.toLowerCase(),
+  )?.[1];
+
 function runAll() {
   if (!db) return;
   setStatus("Đang chạy...");
@@ -90,17 +99,25 @@ function runAll() {
       try {
         const isView = r.as && views.has(r.as);
         if (r.as && verr[r.as] && !isView) throw new Error(verr[r.as]);
-        const last = db
-          .exec(isView ? "SELECT * FROM " + qi(r.as) : r.sql)
-          .at(-1);
+        let sql = isView ? "SELECT * FROM " + qi(r.as) : r.sql;
+        const where = ruleFilter(r.name);
+        if (where)
+          sql = `SELECT * FROM (${sql.replace(/;\s*$/, "")}) WHERE ${where}`;
+        const last = db.exec(sql).at(-1);
         if (last) {
           o.cols = last.columns;
-          const dc = o.cols.map(isDateCol);
+          const dc = o.cols.map(
+            (c, i) => isDateCol(c) && !isDurationCol(last.values, i),
+          );
           o.rows = last.values.map((x) =>
             x.map((v, i) =>
               dc[i] || isXmlDateTime(v) ? fmtDate(v) : fmtXmlDateTimes(v),
             ),
           );
+          // any rule with a LIEU_DUNG column: only doses taken 2 or more times a day
+          const ld = o.cols.findIndex((c) => /^lieu_?dung$/i.test(c));
+          if (ld >= 0)
+            o.rows = o.rows.filter((x) => timesPerDay(x[ld]) >= 2);
         }
       } catch (e) {
         o.err = e.message;
