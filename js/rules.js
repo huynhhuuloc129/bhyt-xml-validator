@@ -39,6 +39,8 @@ function parseRules(text) {
 // Extra conditions applied on top of a rule's own SQL, keyed by rule name (case-insensitive)
 const RULE_FILTERS = {
   DAUVAO: `"TIME" < 3`, // only stays less than 3 minutes
+  // GIO_NGAY_TH_YL is "H giờ M phút": only less than 4 hours
+  DVKT_THAN_4T: `CAST("GIO_NGAY_TH_YL" AS INTEGER) < 4`,
 };
 const ruleFilter = (name) =>
   Object.entries(RULE_FILTERS).find(
@@ -56,6 +58,51 @@ const ruleKey = (s) =>
   s.normalize("NFD").replace(/[̀-ͯ\s]/g, "").replace(/đ/gi, "d").toLowerCase();
 const rowFilter = (name) =>
   Object.entries(ROW_FILTERS).find(([k]) => ruleKey(k) === ruleKey(name))?.[1];
+
+// Extra results listing the rows of rule `a` or `b` whose visit (`key` columns) is missing from
+// the other rule; shown right after the later of the two
+const DIFF_RULES = [
+  {
+    name: "DVKT_NS_XNmobenhhoc_KHONG_KHOP",
+    desc: "Nội soi sinh thiết mà không có XN mô bệnh học (hoặc ngược lại) trong cùng đợt điều trị",
+    a: "DVKT_NS_XNmobenhhoc_NS",
+    b: "DVKT_NS_XNmobenhhoc_XNMBH",
+    key: ["MA_BN", "NGAY_VAO", "NGAY_RA"],
+  },
+];
+function addDiffResults(results) {
+  const find = (n) => results.find((r) => ruleKey(r.name) === ruleKey(n));
+  for (const d of DIFF_RULES) {
+    const a = find(d.a),
+      b = find(d.b);
+    if (!a || !b) continue;
+    const o = {
+      name: d.name,
+      sev: "error",
+      desc: d.desc,
+      as: null,
+      sql: `-- dòng của ${d.a} / ${d.b} không có trong bảng còn lại (so theo ${d.key.join(", ")})`,
+      cols: ["CHI_CO_TRONG", ...a.cols],
+      rows: [],
+      err: a.err || b.err ? `${d.a} hoặc ${d.b} bị lỗi SQL` : null,
+    };
+    if (!o.err) {
+      const keyOf = (r) => (x) =>
+        d.key.map((c) => x[r.cols.findIndex((n) => n.toUpperCase() === c)]).join("|");
+      const keysA = new Set(a.rows.map(keyOf(a))),
+        keysB = new Set(b.rows.map(keyOf(b)));
+      // b's rows are laid out in a's column order
+      const toA = a.cols.map((c) => b.cols.indexOf(c));
+      o.rows = [
+        ...a.rows.filter((x) => !keysB.has(keyOf(a)(x))).map((x) => [d.a, ...x]),
+        ...b.rows
+          .filter((x) => !keysA.has(keyOf(b)(x)))
+          .map((x) => [d.b, ...toA.map((i) => (i < 0 ? null : x[i]))]),
+      ];
+    }
+    results.splice(Math.max(results.indexOf(a), results.indexOf(b)) + 1, 0, o);
+  }
+}
 
 function runAll() {
   if (!db) return;
@@ -139,6 +186,7 @@ function runAll() {
       }
       results.push(o);
     }
+    addDiffResults(results);
     for (const o of results) o.keys = rowKeys(o, pidx, createdViews);
     setStatus(
       "Xong trong " + ((performance.now() - t0) / 1000).toFixed(2) + "s",
