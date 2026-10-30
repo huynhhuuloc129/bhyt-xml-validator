@@ -59,6 +59,9 @@ const ruleKey = (s) =>
 const rowFilter = (name) =>
   Object.entries(ROW_FILTERS).find(([k]) => ruleKey(k) === ruleKey(name))?.[1];
 
+// Rules whose results have no GHI_CHU column, matched like ROW_FILTERS
+const NO_NOTE_RULES = ["DVKT_KHONGTHUOC", "DVKT_dieutrituyrang_2"].map(ruleKey);
+
 // Extra results listing the rows of rule `a` or `b` whose visit (`key` columns) is missing from
 // the other rule; shown right after the later of the two
 const DIFF_RULES = [
@@ -184,8 +187,13 @@ function runAll() {
           else if (ld >= 0)
             o.rows = o.rows.filter((x) => timesPerDay(x[ld]) >= 2);
           // GHI_CHU: the rule's criteria, as in the Access query designer
-          if (r.note) {
-            const gc = o.cols.findIndex((c) => /^ghi_?chu$/i.test(c));
+          const gc = o.cols.findIndex((c) => /^ghi_?chu$/i.test(c));
+          if (NO_NOTE_RULES.includes(ruleKey(r.name))) {
+            if (gc >= 0) {
+              o.cols = o.cols.filter((_, i) => i !== gc);
+              o.rows = o.rows.map((x) => x.filter((_, i) => i !== gc));
+            }
+          } else if (r.note) {
             if (gc < 0) o.cols = [...o.cols, "GHI_CHU"];
             o.rows = o.rows.map((x) =>
               gc < 0 ? [...x, r.note] : x.map((v, i) => (i === gc ? r.note : v)),
