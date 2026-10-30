@@ -45,6 +45,22 @@ const ruleFilter = (name) =>
     ([k]) => k.toLowerCase() === name.toLowerCase(),
   )?.[1];
 
+// Row filters run on a rule's result rows instead of the default LIEU_DUNG one, keyed by rule
+// name ignoring case, spaces and Vietnamese accents; `get(col)` reads a column of the row
+const ROW_FILTERS = {
+  // daily dose (HAM_LUONG mg × times per day) of 180mg or more
+  THUOC_LD_Fexofenadin_120mg_1v_ngay: (get) =>
+    parseFloat(get("HAM_LUONG")) * timesPerDay(get("LIEU_DUNG")) >= 180,
+};
+const ruleKey = (s) =>
+  s
+    .normalize("NFD")
+    .replace(/[̀-ͯ\s]/g, "")
+    .replace(/đ/gi, "d")
+    .toLowerCase();
+const rowFilter = (name) =>
+  Object.entries(ROW_FILTERS).find(([k]) => ruleKey(k) === ruleKey(name))?.[1];
+
 function runAll() {
   if (!db) return;
   setStatus("Đang chạy...");
@@ -114,9 +130,14 @@ function runAll() {
               dc[i] || isXmlDateTime(v) ? fmtDate(v) : fmtXmlDateTimes(v),
             ),
           );
-          // any rule with a LIEU_DUNG column: only doses taken 2 or more times a day
+          const keep = rowFilter(r.name);
+          // any other rule with a LIEU_DUNG column: only doses taken 2 or more times a day
           const ld = o.cols.findIndex((c) => /^lieu_?dung$/i.test(c));
-          if (ld >= 0)
+          if (keep)
+            o.rows = o.rows.filter((x) =>
+              keep((c) => x[o.cols.findIndex((n) => n.toUpperCase() === c)]),
+            );
+          else if (ld >= 0)
             o.rows = o.rows.filter((x) => timesPerDay(x[ld]) >= 2);
         }
       } catch (e) {
