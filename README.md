@@ -30,21 +30,21 @@ Plain `.sql` files (e.g. exported Access queries) are imported as one rule each 
 
 ## Project layout
 
-| File | What it does |
-|---|---|
-| `index.html` | Page markup; loads the CSS and scripts in order |
-| `css/style.css` | Styles (light/dark) |
-| `js/state.js` | Shared state (`db`, `results`…) and `$` / `setStatus` |
-| `js/utils.js` | Small helpers: HTML escaping, localStorage, date formatting |
-| `js/access-convert.js` | Rewrites Access SQL into SQLite SQL (`a2s`, `fnRen`, `fixDots`) |
+| File                     | What it does                                                                |
+| ------------------------ | --------------------------------------------------------------------------- |
+| `index.html`             | Page markup; loads the CSS and scripts in order                             |
+| `css/style.css`          | Styles (light/dark)                                                         |
+| `js/state.js`            | Shared state (`db`, `results`…) and `$` / `setStatus`                       |
+| `js/utils.js`            | Small helpers: HTML escaping, localStorage, date formatting                 |
+| `js/access-convert.js`   | Rewrites Access SQL into SQLite SQL (`a2s`, `fnRen`, `fixDots`)             |
 | `js/access-functions.js` | Access/VBA functions added to SQLite (`Year`, `DateAdd`, `Format`, `LIKE`…) |
-| `js/rules.js` | Parses the rule text and runs the rules |
-| `js/patients.js` | Links error rows to patients (`MA_LK`) and draws the patient filter |
-| `js/render.js` | Draws the results and exports them to Excel |
-| `js/loader.js` | Reads dropped files: xlsx → tables, sql → rules |
-| `js/main.js` | Startup and button / drag-drop wiring (loaded last) |
-| `js/guard.js` | Discourages DevTools (blocks shortcuts, covers the page while open); open `index.html?dev` to turn it off |
-| `tests/` | Node tests for the conversion and SQL functions |
+| `js/rules.js`            | Parses the rule text and runs the rules                                     |
+| `js/patients.js`         | Links error rows to patients (`MA_LK`) and draws the patient filter         |
+| `js/render.js`           | Draws the results and exports them to Excel                                 |
+| `js/loader.js`           | Reads dropped files: xlsx → tables, sql → rules                             |
+| `js/main.js`             | Startup and button / drag-drop wiring (loaded last)                         |
+| `js/guard.js`            | Discourages DevTools                                                        |
+| `tests/`                 | Node tests for the conversion and SQL functions                             |
 
 The scripts are plain `<script>` files sharing globals (not ES modules) so the page works when opened directly from disk.
 Script order in `index.html` matters only for `state.js` (first) and `main.js` (last).

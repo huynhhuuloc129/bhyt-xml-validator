@@ -7,7 +7,19 @@ $("rules").addEventListener("input", () => {
   showRuleCount();
 });
 
-initSqlJs()
+// WebAssembly build (~3x faster); falls back to the asm.js build if the .wasm can't be loaded
+const SQL_CDN = "https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/";
+initSqlJs({ locateFile: (f) => SQL_CDN + f })
+  .catch(
+    () =>
+      new Promise((ok, fail) => {
+        const s = document.createElement("script");
+        s.src = SQL_CDN + "sql-asm.js";
+        s.onload = () => initSqlJs().then(ok, fail);
+        s.onerror = fail;
+        document.head.appendChild(s);
+      }),
+  )
   .then((s) => {
     SQL = s;
     setStatus("SQLite đã sẵn sàng");

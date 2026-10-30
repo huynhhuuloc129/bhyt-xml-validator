@@ -49,6 +49,10 @@ async function loadFile(f) {
       }
       db.run("COMMIT");
       st.free();
+      // the rules join and filter on these, so index them (halves the run time)
+      for (const c of ["MA_LK", "MA_BN", "MA_THUOC", "MA_DICH_VU"])
+        if (cols.includes(c))
+          db.run(`CREATE INDEX ${qi("ix_" + sn + "_" + c)} ON ${qi(sn)} (${qi(c)})`);
       info.push({ sn, cols, n });
     }
     indexPatients(db, info);
