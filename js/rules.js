@@ -38,7 +38,7 @@ function parseRules(text) {
 
 // Extra conditions applied on top of a rule's own SQL, keyed by rule name (case-insensitive)
 const RULE_FILTERS = {
-  DAUVAO: `"TIME" <= 3`, // only stays of 3 minutes or less
+  DAUVAO: `"TIME" < 3`, // only stays of 3 minutes or less
 };
 const ruleFilter = (name) =>
   Object.entries(RULE_FILTERS).find(
