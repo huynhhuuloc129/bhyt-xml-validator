@@ -9,9 +9,9 @@ const path = require("path");
 const load = (...files) =>
   new Function(
     files.map((f) => fs.readFileSync(path.join(__dirname, "..", f), "utf8")).join("\n") +
-      "\nreturn { a2s, fnRen, fixDots, regFns, fmt, fmtDate, isDateCol, isDurationCol, timesPerDay, isXmlDateTime, fmtXmlDateTimes };",
+      "\nreturn { accessCriteria, a2s, fnRen, fixDots, regFns, fmt, fmtDate, isDateCol, isDurationCol, timesPerDay, isXmlDateTime, fmtXmlDateTimes };",
   )();
-const { a2s, fnRen, fixDots, regFns, fmt, fmtDate, isDateCol, isDurationCol, timesPerDay, isXmlDateTime, fmtXmlDateTimes } = load("js/utils.js", "js/access-convert.js", "js/access-functions.js");
+const { accessCriteria, a2s, fnRen, fixDots, regFns, fmt, fmtDate, isDateCol, isDurationCol, timesPerDay, isXmlDateTime, fmtXmlDateTimes } = load("js/utils.js", "js/access-convert.js", "js/access-functions.js");
 const fn = {};
 regFns({ create_function: (name, f) => (fn[name] = f) });
 
@@ -97,4 +97,31 @@ test("timesPerDay reads doses per day from LIEU_DUNG", () => {
   assert.strictEqual(timesPerDay("1 Viên/lần * 2 lần/ngày * 30 ngày [2 Viên/ngày]"), 2);
   assert.strictEqual(timesPerDay("1 Viên/lần * 3 lan / ngay"), 3);
   assert.strictEqual(timesPerDay("Uống sáng"), null);
+});
+
+test("accessCriteria lists criteria per column like the Access designer", () => {
+  assert.strictEqual(
+    accessCriteria(
+      a2s(
+        'SELECT XML1.MA_BN FROM XML1 INNER JOIN XML3 ON XML1.MA_LK = XML3.MA_LK ' +
+          'WHERE (((XML3.MA_DICH_VU)="23.1" Or (XML3.MA_DICH_VU)="23.2") AND ' +
+          '((XML1.CHAN_DOAN_RV) Not Like "*gan*" And (XML1.CHAN_DOAN_RV) Not Like "*suy (gan)*") AND ((XML1.MA_KHOA)<>"K01"));',
+      ),
+    ),
+    'MA_DICH_VU: 23.1; 23.2\nCHAN_DOAN_RV: gan; suy (gan)\nMA_KHOA: <> K01',
+  );
+  assert.strictEqual(
+    accessCriteria("SELECT a FROM T GROUP BY a HAVING (((T.a) In ('x','y','x')))"),
+    "a: x; y",
+  );
+  assert.strictEqual(
+    accessCriteria("SELECT a FROM T WHERE (((T.a) Is Not Null And (T.a)<>''))"),
+    'a: Is Not Null; <> ""',
+  );
+  // hand-written conditions are shown as written
+  assert.strictEqual(
+    accessCriteria("SELECT * FROM T WHERE a = 'x' AND EXISTS (SELECT 1 FROM U WHERE U.b = T.b)"),
+    'a = "x" AND EXISTS (SELECT 1 FROM U WHERE U.b = T.b)',
+  );
+  assert.strictEqual(accessCriteria("SELECT * FROM T"), "");
 });

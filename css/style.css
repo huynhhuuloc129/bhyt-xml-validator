@@ -569,7 +569,7 @@ td {
   border-bottom: 1px solid var(--bd);
   border-right: 1px solid var(--bd);
   text-align: left;
-  white-space: normal;
+  white-space: pre-line;
   overflow-wrap: anywhere;
   vertical-align: top;
   min-width: 90px;

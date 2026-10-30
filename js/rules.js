@@ -110,7 +110,10 @@ function runAll() {
   setTimeout(() => {
     const t0 = performance.now();
     const { setup, rules } = parseRules($("rules").value);
-    rules.forEach((r) => (r.sql = fixDots(fnRen(r.sql))));
+    rules.forEach((r) => {
+      r.note = accessCriteria(r.sql);
+      r.sql = fixDots(fnRen(r.sql));
+    });
     results = [];
     try {
       if (hasSql(setup)) db.exec(setup);
@@ -180,6 +183,14 @@ function runAll() {
             );
           else if (ld >= 0)
             o.rows = o.rows.filter((x) => timesPerDay(x[ld]) >= 2);
+          // GHI_CHU: the rule's criteria, as in the Access query designer
+          if (r.note) {
+            const gc = o.cols.findIndex((c) => /^ghi_?chu$/i.test(c));
+            if (gc < 0) o.cols = [...o.cols, "GHI_CHU"];
+            o.rows = o.rows.map((x) =>
+              gc < 0 ? [...x, r.note] : x.map((v, i) => (i === gc ? r.note : v)),
+            );
+          }
         }
       } catch (e) {
         o.err = e.message;
