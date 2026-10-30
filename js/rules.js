@@ -50,14 +50,10 @@ const ruleFilter = (name) =>
 const ROW_FILTERS = {
   // daily dose (HAM_LUONG mg × times per day) of 180mg or more
   THUOC_LD_Fexofenadin_120mg_1v_ngay: (get) =>
-    parseFloat(get("HAM_LUONG")) * timesPerDay(get("LIEU_DUNG")) >= 180,
+    parseFloat(get("HAM_LUONG")) * timesPerDay(get("LIEU_DUNG")) > 180,
 };
 const ruleKey = (s) =>
-  s
-    .normalize("NFD")
-    .replace(/[̀-ͯ\s]/g, "")
-    .replace(/đ/gi, "d")
-    .toLowerCase();
+  s.normalize("NFD").replace(/[̀-ͯ\s]/g, "").replace(/đ/gi, "d").toLowerCase();
 const rowFilter = (name) =>
   Object.entries(ROW_FILTERS).find(([k]) => ruleKey(k) === ruleKey(name))?.[1];
 
@@ -93,9 +89,7 @@ function runAll() {
     for (const r of rules) {
       if (!r.as || !hasSql(r.sql)) continue;
       try {
-        db.run(
-          `CREATE VIEW ${qi(r.as)} AS ${r.sql.replace(/;\s*$/, "")}`,
-        );
+        db.run(`CREATE VIEW ${qi(r.as)} AS ${r.sql.replace(/;\s*$/, "")}`);
         views.add(r.as);
         createdViews.push(r.as);
       } catch (e) {
