@@ -38,7 +38,7 @@ function parseRules(text) {
 
 // Extra conditions applied on top of a rule's own SQL, keyed by rule name (case-insensitive)
 const RULE_FILTERS = {
-  DAUVAO: `"TIME" < 3`, // only stays of 3 minutes or less
+  DAUVAO: `"TIME" < 3`, // only stays less than 3 minutes
 };
 const ruleFilter = (name) =>
   Object.entries(RULE_FILTERS).find(
@@ -48,7 +48,7 @@ const ruleFilter = (name) =>
 // Row filters run on a rule's result rows instead of the default LIEU_DUNG one, keyed by rule
 // name ignoring case, spaces and Vietnamese accents; `get(col)` reads a column of the row
 const ROW_FILTERS = {
-  // daily dose (HAM_LUONG mg × times per day) of 180mg or more
+  // daily dose (HAM_LUONG mg × times per day) more than 180 mg
   THUOC_LD_Fexofenadin_120mg_1v_ngay: (get) =>
     parseFloat(get("HAM_LUONG")) * timesPerDay(get("LIEU_DUNG")) > 180,
 };

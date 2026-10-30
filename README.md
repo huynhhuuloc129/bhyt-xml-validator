@@ -43,6 +43,7 @@ Plain `.sql` files (e.g. exported Access queries) are imported as one rule each 
 | `js/render.js` | Draws the results and exports them to Excel |
 | `js/loader.js` | Reads dropped files: xlsx → tables, sql → rules |
 | `js/main.js` | Startup and button / drag-drop wiring (loaded last) |
+| `js/guard.js` | Discourages DevTools (blocks shortcuts, covers the page while open); open `index.html?dev` to turn it off |
 | `tests/` | Node tests for the conversion and SQL functions |
 
 The scripts are plain `<script>` files sharing globals (not ES modules) so the page works when opened directly from disk.
