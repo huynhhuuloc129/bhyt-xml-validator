@@ -732,6 +732,13 @@ pre.sql {
   width: 100%;
   max-width: 420px;
 }
+td.nm {
+  cursor: pointer;
+  color: var(--ac);
+}
+td.nm:hover {
+  text-decoration: underline;
+}
 #plist {
   margin-top: 10px;
 }

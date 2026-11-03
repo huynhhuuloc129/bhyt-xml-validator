@@ -7,6 +7,26 @@ const sqlDetails = (sql) =>
 const tr = (cells, tag) =>
   "<tr>" + cells.map((v) => `<${tag}>${esc(v)}</${tag}>`).join("") + "</tr>";
 
+// a result row whose HO_TEN cell is clickable: clicking it searches for that name
+const nameRow = (x, nm) =>
+  "<tr>" +
+  x
+    .map((v, i) =>
+      i === nm && norm(v)
+        ? `<td class="nm" title="Bấm để tìm theo tên này">${esc(v)}</td>`
+        : `<td>${esc(v)}</td>`,
+    )
+    .join("") +
+  "</tr>";
+
+// clicking a name puts it in the search box; clicking the same name again clears it
+function searchName(name) {
+  const q = $("q");
+  q.value = q.value.trim().toLowerCase() === name.toLowerCase() ? "" : name;
+  render();
+  q.focus();
+}
+
 function render() {
   const q = $("q").value.trim().toLowerCase(),
     only = $("onlyerr").checked;
@@ -67,18 +87,20 @@ function render() {
     if (r.err)
       body =
         `<div class="err">⚠ Lỗi SQL: ${esc(r.err)}</div>` + sqlDetails(r.sql);
-    else if (has)
+    else if (has) {
+      const nm = findCol(r.cols, "HO_TEN");
       body =
         `<div class="tw"><table><thead>${tr(r.cols, "th")}</thead><tbody>` +
         rows
           .slice(0, 500)
-          .map((x) => tr(x, "td"))
+          .map((x) => (nm < 0 ? tr(x, "td") : nameRow(x, nm)))
           .join("") +
         `</tbody></table></div>` +
         (rows.length > 500
           ? `<div class="m">Hiển thị 500/${rows.length} dòng. Xuất Excel để xem đủ.</div>`
           : "") +
         sqlDetails(r.sql);
+    }
     const d = document.createElement("div");
     d.className =
       `rule k-${kind}` +

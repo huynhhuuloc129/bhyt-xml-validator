@@ -57,6 +57,10 @@ $("xall").onclick = () => {
   rs.forEach((r) => r.classList.toggle("open", open));
 };
 $("pq").oninput = renderPatients;
+$("out").addEventListener("click", (e) => {
+  const td = e.target.closest("td.nm");
+  if (td && !getSelection().toString()) searchName(td.textContent.trim());
+});
 $("opt").onclick = () => {
   const show = $("opts").hidden;
   $("opts").hidden = !show;
