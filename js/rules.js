@@ -85,22 +85,26 @@ function addDiffResults(results) {
       desc: d.desc,
       as: null,
       sql: `-- dòng của ${d.a} / ${d.b} không có trong bảng còn lại (so theo ${d.key.join(", ")})`,
-      cols: ["CHI_CO_TRONG", ...a.cols],
       rows: [],
       err: a.err || b.err ? `${d.a} hoặc ${d.b} bị lỗi SQL` : null,
     };
+    // all columns of both rules, a's first: a rule with no rows comes back with no columns,
+    // so laying everything out in a's columns alone would drop b's data
+    const cols = [...a.cols, ...b.cols.filter((c) => !a.cols.includes(c))];
+    o.cols = ["CHI_CO_TRONG", ...cols];
     if (!o.err) {
       const keyOf = (r) => (x) =>
         d.key.map((c) => x[r.cols.findIndex((n) => n.toUpperCase() === c)]).join("|");
       const keysA = new Set(a.rows.map(keyOf(a))),
         keysB = new Set(b.rows.map(keyOf(b)));
-      // b's rows are laid out in a's column order
-      const toA = a.cols.map((c) => b.cols.indexOf(c));
+      // each rule's rows laid out in the shared column order
+      const lay = (r, name) => {
+        const at = cols.map((c) => r.cols.indexOf(c));
+        return (x) => [name, ...at.map((i) => (i < 0 ? null : x[i]))];
+      };
       o.rows = [
-        ...a.rows.filter((x) => !keysB.has(keyOf(a)(x))).map((x) => [d.a, ...x]),
-        ...b.rows
-          .filter((x) => !keysA.has(keyOf(b)(x)))
-          .map((x) => [d.b, ...toA.map((i) => (i < 0 ? null : x[i]))]),
+        ...a.rows.filter((x) => !keysB.has(keyOf(a)(x))).map(lay(a, d.a)),
+        ...b.rows.filter((x) => !keysA.has(keyOf(b)(x))).map(lay(b, d.b)),
       ];
     }
     results.splice(Math.max(results.indexOf(a), results.indexOf(b)) + 1, 0, o);

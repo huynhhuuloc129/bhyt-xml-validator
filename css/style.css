@@ -734,10 +734,8 @@ pre.sql {
 }
 td.nm {
   cursor: pointer;
-  color: var(--ac);
-}
-td.nm:hover {
-  text-decoration: underline;
+  color: black;
+  text-decoration: none;
 }
 #plist {
   margin-top: 10px;
@@ -760,7 +758,7 @@ td.nm:hover {
     padding: 16px 16px 60px;
   }
   input[type="text"],
-input[type="search"] {
+  input[type="search"] {
     min-width: 0;
     width: 100%;
   }
