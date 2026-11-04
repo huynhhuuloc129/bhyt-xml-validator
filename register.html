@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="vi" data-theme="light">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <title>Đăng ký — Kiểm tra hồ sơ bệnh án điện tử</title>
+    <script>
+      try {
+        if (localStorage.getItem("theme") === "dark")
+          document.documentElement.dataset.theme = "dark";
+      } catch (e) {}
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/sql-wasm.js"></script>
+    <link rel="stylesheet" href="css/style.css?v=10" />
+    <link rel="stylesheet" href="css/auth.css?v=2" />
+  </head>
+  <body>
+    <nav class="nav">
+      <span class="logo">
+        <svg viewBox="0 0 24 24">
+          <circle cx="11" cy="11" r="7" />
+          <path d="m8 11 2 2 4-4M21 21l-4.3-4.3" />
+        </svg>
+      </span>
+      <div class="brand">
+        <h1>Kiểm tra hồ sơ bệnh án điện tử</h1>
+      </div>
+    </nav>
+
+    <main class="auth">
+      <section class="card">
+        <h2>Đăng ký tài khoản</h2>
+        <p class="m">Tạo tài khoản mới để sử dụng công cụ kiểm tra.</p>
+        <form id="register" novalidate>
+          <label>
+            Tên đăng nhập
+            <input
+              type="text"
+              name="username"
+              autocomplete="username"
+              autocapitalize="off"
+              spellcheck="false"
+              required
+              autofocus
+            />
+            <span class="hint m"
+              >3–32 ký tự, bắt đầu bằng chữ cái; chỉ gồm chữ không dấu, số và
+              . _ -</span
+            >
+          </label>
+          <label>
+            Mật khẩu
+            <input
+              type="password"
+              name="password"
+              autocomplete="new-password"
+              required
+            />
+            <span class="hint m"
+              >8–64 ký tự, có cả chữ cái và chữ số.</span
+            >
+          </label>
+          <label>
+            Nhập lại mật khẩu
+            <input
+              type="password"
+              name="confirm"
+              autocomplete="new-password"
+              required
+            />
+          </label>
+          <p class="msg" role="alert" hidden></p>
+          <button type="submit" class="lg">Đăng ký</button>
+        </form>
+        <p class="alt m">
+          Đã có tài khoản? <a href="login.html">Đăng nhập</a>
+        </p>
+      </section>
+    </main>
+
+    <script src="js/auth.js?v=2"></script>
+    <script>
+      wireAuthForm(document.getElementById("register"), (udb, v) =>
+        registerUser(udb, v.username, v.password, v.confirm),
+      );
+    </script>
+  </body>
+</html>

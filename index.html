@@ -6,10 +6,12 @@
       name="viewport"
       content="width=device-width, initial-scale=1, viewport-fit=cover"
     />
-    <title>Kiểm tra lỗi XML.xlsx</title>
+    <title>Kiểm tra hồ sơ bệnh án điện tử</title>
+    <script src="js/session.js?v=1"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/sql-wasm.js"></script>
     <link rel="stylesheet" href="css/style.css?v=10" />
+    <link rel="stylesheet" href="css/auth.css?v=2" />
   </head>
   <body>
     <nav class="nav">
@@ -20,9 +22,15 @@
         </svg>
       </span>
       <div class="brand">
-        <h1>Kiểm tra lỗi XML</h1>
+        <h1>Kiểm tra hồ sơ bệnh án điện tử</h1>
       </div>
+      <span class="who" id="user"></span>
       <button class="ib" id="theme" title="Đổi giao diện sáng / tối"></button>
+      <button class="ib" id="logout" title="Đăng xuất">
+        <svg viewBox="0 0 24 24">
+          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9" />
+        </svg>
+      </button>
     </nav>
 
     <div class="w">
